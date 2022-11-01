@@ -1,39 +1,13 @@
-This is a template for the EDAV final project. It is based on the template created with *File, New Project..., New Directory, Book Project using bookdown* in RStudio. 
+# EDAV Final Project (Group 9)
 
+### Website: yichuang25.github.io/EDAV-Final-Project-9/
 
-## ABSOLUTE ESSENTIALS
+### Introduction
+For the final project, our team will focus on discovering the relationship between the disease Tuberculosis (TB) spread worldwide and the TB vaccine - Bacille Calmette-Guerin (BCG). The TB dataset collected from WHO covers numerous information, including but not limited to the budget, new cases, treatment success rate, etc., from 1980 - 2021.  The BCG dataset is collected from UNICEF, including the vaccination rate for each country from 1980 - 2021.
 
-*If you have any difficulties or have feedback of any kind, please file an issue or communicate through [Discussions](https://github.com/jtr13/EDAVtemplate/discussions).*
+TB is caused by a bacterium called Mycobacterium tuberculosis. The bacteria usually attract the lungs, but TB bacteria can affect any part of the body, such as the kidney, spine, and brain. Not everyone infected with TB bacteria becomes sick. As a result, two TB-related conditions exist latent TB infection (LTBI) and TB disease. If not treated properly, TB disease can be fatal. (TB Basic Facts) [https://www.cdc.gov/tb/topic/basics/default.htm]  TB bacteria spread through the air from one person to another. When a person with TB disease of the lungs or throat coughs, speaks or sings, TB bacteria can get into the air. People nearby may breathe in these bacteria and become infected. (TB Spread) [https://www.cdc.gov/tb/topic/basics/howtbspreads.htm] 
 
-### Copy this template
-
-- [ ] 1. Click the green "Use this template" button above.  DO NOT FORK THE REPO. Choose a descriptive name for your repo, such as "federalbudget" or "AIDSdeaths".  (If you change your mind before you do any work, delete your new repo and start over.)
-
-- [ ] 2. In the Description field, write: "Bookdown source files for EDAV final project".
-
-### Set up GitHub Pages	
-- [ ] 1. On the home page of your repo, click Settings. Click the "Pages" section on the left. Change **Source** from **None** to **main**, change **/ (root)** to **/docs** folder, and click Save. Above the **Source** line, a bar will appear with your book's URL. The bar will initially be blue and indicate that your book is *ready* to be published and will change to green once it is published. Copy the URL. (Note that sometimes there is a delay until your book actually appears at that URL. If it doesn't appear after a few minutes, make a change and commit it to trigger a GitHub Pages build.)	
-
-- [ ] 2. Click the gear button near "About" on the home page of the repo and paste your book URL into the **Website** field that appears on the right.
-
-### Clone the repo
-
-- [ ] 1. Clone your new repo with *File, New Project..., Version Control, Git* in RStudio.
-
-### Edit some key files
-
-- [ ] 1. In `index.Rmd`, change YOUR TITLE HERE to your title.
-
-- [ ] 2. In `index.Rmd`, change YOUR NAMES HERE to your names.
-
-- [ ] 3. In `_bookdown.yml`, change YOUR GITHUB USERNAME to your GitHub username in the two places it appears.
-
-- [ ] 4. In `_bookdown.yml`, change YOUR GITHUB REPO to your GitHub repo name in the two places it appears.
-
-(Note that 3. and 4. provide links to the `.Rmd` files of your project for editing and viewing. If you move your `.Rmd` files you will need to update these file paths. Once your book is rendered, test that the edit (pen) and view (eye) buttons work.)
-
-- [ ] 5. In `_output.yml`, change YOUR SHORT TITLE to a shortened version of your title. (Leave the "after:" line indicating that the book was published with bookdown as is.)
-
+TB vaccine - BCG is a vaccine for tuberculosis (TB) disease. This vaccine is not widely used in the United States. However, it is often given to infants and small children in other countries where TB is common. BCG does not always protect people from getting TB. (BCG Basic Facts) [https://www.cdc.gov/tb/topic/basics/vaccines.htm]
 ### Render the book
 
 - [ ] 1. Install **bookdown** with `install.packages("bookdown")`. If you already have it, update to the most recent version.
@@ -45,12 +19,6 @@ This is a template for the EDAV final project. It is based on the template creat
 - [ ] 4. If it looks good, commit and push all changed files to GitHub. 
 
 (You will need to repeat steps 2 and 4 every time you wish to update the book online.)
-
-### Edit README	
-
-Once you've completed these steps, delete the content of this **README** and add a short description of your project with a link to the book URL. It would be appreciated if you add the following to the end:	
-
-*This repo was initially generated from a bookdown template available here: https://github.com/jtr13/EDAVtemplate.*	
 
 ### Demo Video	
 
