@@ -7,6 +7,8 @@ vaccination-dataset
 more-datasets-may-be-introduced-to-help-our-analysis-in-the-future.
 data
 sources
+tuberculosistb-notification-and-outcome-dataset-1
+vaccination-dataset-1
 cleaning-transformation
 missing-value-analysis
 results
