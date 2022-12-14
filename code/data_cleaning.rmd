@@ -19,7 +19,7 @@ library(plotly)
 ```
 
 ```{r}
-tb <- read.csv("Datasets/TB_notifications_2022-10-28.csv")
+tb <- read.csv("../Datasets/TB_notifications_2022-10-28.csv")
 ```
 ```{r}
 tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
@@ -88,7 +88,7 @@ substr('X1987', 2, 5)
 
 ### Read Population dataset and preprocessing it
 ```{r}
-df_population <- read.csv("Datasets/population.csv")
+df_population <- read.csv("../Datasets/population.csv")
 df_population_1 <- df_population %>% 
         select(1:2, 25:66) %>% 
         pivot_longer(cols = -c('Country.Name', 'Country.Code'),
@@ -105,7 +105,7 @@ df_tb_cleaning <- merge(df_population_1, tb_cleaning_3, by = c('iso3', 'year'))
 ```
 ### Read continent dataset
 ```{r}
-df_continent <- read.csv("Datasets/continents2.csv")
+df_continent <- read.csv("../Datasets/continents2.csv")
 df_continent_1 <- df_continent %>%
                     select(alpha.3, region) %>%
                     rename(iso3 = alpha.3, continent = region)
@@ -120,7 +120,7 @@ View(df_tb_cleaning_1)
 ### HIV Dataset
 source: https://ourworldindata.org/grapher/number-of-people-living-with-hiv?time=2005
 ```{r}
-df_hiv <- read.csv("Datasets/number-of-people-living-with-hiv.csv")
+df_hiv <- read.csv("../Datasets/number-of-people-living-with-hiv.csv")
 df_hiv_1 <- df_hiv %>% 
         select(2:4) %>%
         rename(iso3 = Code,
