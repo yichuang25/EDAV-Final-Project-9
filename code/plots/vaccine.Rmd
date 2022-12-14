@@ -1,0 +1,49 @@
+```{r}
+library(dplyr)
+library(tidyverse)
+library(plotly)
+library(ggplot2)
+
+```
+
+```{r}
+df_population <- read.csv("../../Datasets/cleaned/df_population.csv")
+df_continent <- read.csv("../../Datasets/cleaned/continent.csv")
+tb_cleaning <- read.csv("../../Datasets/cleaned/df_tb_cleaning_2.csv")
+tb_population_geo <- read.csv("../../Datasets/cleaned/tb_population_geo.csv")
+vaccine_cleaned <- read.csv("../../Datasets/cleaned/vaccine_cleaned.csv")
+vaccine_pivoted <- read.csv("../../Datasets/cleaned/vaccine_pivoted.csv")
+```
+
+
+```{r}
+vaccine_population <- merge(vaccine_pivoted, df_population, by=c('iso3','year','country'))
+vaccine_population <- vaccine_population %>% select(1:3,5,7)
+head(vaccine_population)
+```
+```{r}
+vaccine_population_geo <- merge(df_continent, vaccine_population, by='iso3')
+vaccine_population_geo <- vaccine_population_geo %>% select(1,3:7)
+write.csv(vaccine_population_geo, "../../Datasets/cleaned/vaccine_population_geo.csv")
+head(vaccine_population_geo)
+```
+```{r}
+fig <- plot_ly(data=vaccine_population_geo, x = ~population, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter')
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+fig
+```
+
+```{r}
+
+```
+
+
+

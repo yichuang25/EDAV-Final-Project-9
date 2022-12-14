@@ -190,6 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#vaccine"><i class="fa fa-check"></i><b>4.3</b> Vaccine</a>
 <ul>
 <li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#map-for-vaccination-rate"><i class="fa fa-check"></i><b>4.3.1</b> Map for vaccination rate</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#vaccineation-rate-and-population"><i class="fa fa-check"></i><b>4.3.2</b> Vaccineation rate and population</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
@@ -215,6 +216,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="interactive-component" class="section level1 hasAnchor" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Interactive component<a href="interactive-component.html#interactive-component" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>0.2548630146775390.3024297850206490.3499424238689240.9446168108843270.140323021914810.9019033168442550.324940193211660.6259682273957880.1565785673446950.7741540537681430.6886239517480130.1019611153751610.6687966899480670.388999152462930.6072852797806260.6829057571012530.6043946745339780.8234211283270270.9446470935363320.9061257659923290.1186441590543840.8568126272875820.9001990200486030.817397918319330.9808167845476420.201972378650680.5076195080764590.8201255237217990.8326228316873310.330693641910329numericsvgsteelbluevar d3Script = function(d3, r2d3, data, svg, width, height, options, theme, console) {
+this.d3 = d3;</p>
+<p>svg = d3.select(svg.node());
+svg.selectAll(‘rect’)
+.data(data)
+.enter()
+.append(‘rect’)
+.attr(‘width’, function(d) { return d * 672; })
+.attr(‘height’, ‘10px’)
+.attr(‘y’, function(d, i) { return i * 16; })
+.attr(‘fill’, options.color);
+};5#FFFFFF#000000#FFFFFF#000000TRUETRUEFALSETRUEFALSETRUEd3v55.9.2/Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library/r2d3/www/d3/5.9.2d3.min.jsTRUE</p>
 
 </div>
             </section>

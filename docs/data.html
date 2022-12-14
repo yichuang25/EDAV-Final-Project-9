@@ -190,6 +190,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.3" data-path="results.html"><a href="results.html#vaccine"><i class="fa fa-check"></i><b>4.3</b> Vaccine</a>
 <ul>
 <li class="chapter" data-level="4.3.1" data-path="results.html"><a href="results.html#map-for-vaccination-rate"><i class="fa fa-check"></i><b>4.3.1</b> Map for vaccination rate</a></li>
+<li class="chapter" data-level="4.3.2" data-path="results.html"><a href="results.html#vaccineation-rate-and-population"><i class="fa fa-check"></i><b>4.3.2</b> Vaccineation rate and population</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="interactive-component.html"><a href="interactive-component.html"><i class="fa fa-check"></i><b>5</b> Interactive component</a></li>
@@ -331,16 +332,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-3"><a href="data.html#cb6-3" aria-hidden="true" tabindex="-1"></a>vaccine_cleaned <span class="ot">&lt;-</span> <span class="fu">subset</span>(vaccine_temp, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(unicef_region,vaccine))</span>
 <span id="cb6-4"><a href="data.html#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vaccine_cleaned)</span></code></pre></div>
 <pre><code>## # A tibble: 6 × 32
-##   iso3  country     `2021` `2020` `2019` `2018` `2017` `2016` `2015` `2014` `2013` `2012` `2011` `2010` `2009` `2008` `2007` `2006` `2005` `2004` `2003` `2002`
-##   &lt;chr&gt; &lt;chr&gt;        &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 AFG   Afghanistan     84     87     86     89     84     78     76     74     72     78     71     68     64     66     60     60     57     51     44     46
-## 2 ALB   Albania         99     98     99     99     99     99     99     99     99     96     97     99     97     99     98     97     98     97     95     94
-## 3 DZA   Algeria         99     99     99     99     99     99     99     99     99     99     99     99     99     99     99     99     98     98     98     98
-## 4 AGO   Angola          56     58     69     72     69     40     64     72     71     73     74     79     70     73     75     54     51     63     54     76
-## 5 ARG   Argentina       81     75     85     93     95     92     96     99     99     99     99     99     99     99     99     99     99     99     99     95
-## 6 ARM   Armenia         98     99     99     99     99     99     99     99     99     96     96     95     99     98     94     91     94     96     92     97
-## # … with 10 more variables: `2001` &lt;dbl&gt;, `2000` &lt;dbl&gt;, `1999` &lt;dbl&gt;, `1998` &lt;dbl&gt;, `1997` &lt;dbl&gt;, `1996` &lt;dbl&gt;, `1995` &lt;dbl&gt;, `1994` &lt;dbl&gt;, `1993` &lt;dbl&gt;,
-## #   `1992` &lt;dbl&gt;</code></pre>
+##   iso3  country `2021` `2020` `2019` `2018` `2017` `2016` `2015` `2014` `2013` `2012` `2011` `2010` `2009` `2008` `2007` `2006` `2005` `2004` `2003` `2002` `2001`
+##   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 AFG   Afghan…     84     87     86     89     84     78     76     74     72     78     71     68     64     66     60     60     57     51     44     46     43
+## 2 ALB   Albania     99     98     99     99     99     99     99     99     99     96     97     99     97     99     98     97     98     97     95     94     93
+## 3 DZA   Algeria     99     99     99     99     99     99     99     99     99     99     99     99     99     99     99     99     98     98     98     98     97
+## 4 AGO   Angola      56     58     69     72     69     40     64     72     71     73     74     79     70     73     75     54     51     63     54     76     70
+## 5 ARG   Argent…     81     75     85     93     95     92     96     99     99     99     99     99     99     99     99     99     99     99     99     95     92
+## 6 ARM   Armenia     98     99     99     99     99     99     99     99     99     96     96     95     99     98     94     91     94     96     92     97     96
+## # … with 9 more variables: `2000` &lt;dbl&gt;, `1999` &lt;dbl&gt;, `1998` &lt;dbl&gt;, `1997` &lt;dbl&gt;, `1996` &lt;dbl&gt;, `1995` &lt;dbl&gt;, `1994` &lt;dbl&gt;, `1993` &lt;dbl&gt;, `1992` &lt;dbl&gt;</code></pre>
 </div>
 <div id="data-cleaning" class="section level4 hasAnchor" number="3.2.3.2">
 <h4><span class="header-section-number">3.2.3.2</span> Data Cleaning<a href="data.html#data-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -465,7 +465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     new_sp_f65    newrel_f014   newrel_f1524   newrel_f2534   newrel_f3544   newrel_f4554   newrel_f5564     newrel_f65 
 ##           5729           7147           7178           7174           7174           7175           7177           7179</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="data.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(tb_cleaning)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="after-cleaning" class="section level4 hasAnchor" number="3.3.1.2">
 <h4><span class="header-section-number">3.3.1.2</span> After Cleaning<a href="data.html#after-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -475,7 +475,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## new_sp_m4554 new_sp_m5564   new_sp_m65  new_sp_f014 new_sp_f1524 new_sp_f2534 new_sp_f3544 new_sp_f4554 new_sp_f5564   new_sp_f65 
 ##         3413         3419         3430         3435         3446         3437         3437         3433         3444         3444</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(tb_cleaning_3)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 </div>
 <div id="vaccination-dataset-3" class="section level3 hasAnchor" number="3.3.2">
@@ -494,7 +494,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##          1981          1980 
 ##            64            90</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="data.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(vaccine)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-29-1.png" width="672" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-18-1.png" width="672" />
 #### Missing Pattern After Drop</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="data.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(vaccine_cleaned))</span></code></pre></div>
 <pre><code>##    iso3 country    2021    2020    2019    2018    2017    2016    2015    2014    2013    2012    2011    2010    2009    2008    2007    2006    2005    2004 
@@ -502,13 +502,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    2003    2002    2001    2000    1999    1998    1997    1996    1995    1994    1993    1992 
 ##       8       8      10      10      10      12      12      11      11      10      11      15</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="data.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(vaccine)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-31-1.png" width="672" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-20-1.png" width="672" />
 ### Population</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="data.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df_population_1))</span></code></pre></div>
 <pre><code>##    country       iso3       year population 
 ##          0          0          0         65</code></pre>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="data.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(df_population_1)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 </div>
 <div id="hiv-infections-1" class="section level3 hasAnchor" number="3.3.3">
@@ -519,7 +519,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##                                                       Year Prevalence...HIV.AIDS...Sex..Both...Age..All.Ages..Number. 
 ##                                                          0                                                          0</code></pre>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(df_hiv)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 
 </div>
 </div>
