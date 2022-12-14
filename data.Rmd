@@ -175,7 +175,7 @@ df_population_1 <- df_population %>%
         mutate(year = substr(year, 2, 5)) %>%
         rename(country = Country.Name, 
                iso3 = Country.Code)
-write.csv(df_population, "Datasets/cleaned/df_population.csv")
+write.csv(df_population_1, "Datasets/cleaned/df_population.csv")
 head(df_population_1)
 ```
 #### Merged with TB data set
@@ -194,6 +194,7 @@ df_continent <- read.csv("Datasets/raw/continents2.csv")
 df_continent_1 <- df_continent %>%
                     select(alpha.3, region) %>%
                     rename(iso3 = alpha.3, continent = region)
+write.csv(df_continent_1, "Datasets/cleaned/continent.csv")
 df_tb_cleaning_1 <- merge(df_continent_1, df_tb_cleaning, by = 'iso3')
 write.csv(df_tb_cleaning_1, "Datasets/cleaned/tb_population_geo.csv")
 head(df_tb_cleaning_1)

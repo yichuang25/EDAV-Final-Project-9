@@ -1,6 +1,13 @@
 # Results
 ## Import Library and Dataset
 ```r
+library(plotly)
+library(ggplot2)
+
+tb_cleaning_3 <- read.csv("Datasets/cleaned/tb_cleaning.csv")
+df_tb_cleaning_2 <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
+vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
+
 ```
 ```{r}
 library(plotly)
@@ -9,6 +16,7 @@ library(ggplot2)
 tb_cleaning_3 <- read.csv("Datasets/cleaned/tb_cleaning.csv")
 df_tb_cleaning_2 <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
 vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
+vaccine_population_geo <- read.csv("Datasets/cleaned/vaccine_population_geo.csv")
 ```
 
 ## TB
@@ -58,6 +66,33 @@ fig <- fig %>% colorbar(title = "Vaccine Rate")
 fig <- fig %>% layout(
     title = "Vaccine Rate From 1992-2021"
 )
+fig
+```
+### Vaccineation rate and population
+```r
+fig <- plot_ly(data=vaccine_population_geo, x = ~population, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter')
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+fig
+```
+```{r}
+fig <- plot_ly(data=vaccine_population_geo, x = ~population, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter')
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
 fig
 ```
 

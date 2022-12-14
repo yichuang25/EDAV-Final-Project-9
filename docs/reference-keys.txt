@@ -40,5 +40,6 @@ positive-cases-among-years
 maps-graph
 vaccine
 map-for-vaccination-rate
+vaccineation-rate-and-population
 interactive-component
 conclusion
