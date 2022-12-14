@@ -20,8 +20,303 @@
    * Same as the CSV file, the .xlsx file can be imported to R and converted to the data frame by the readxl package.
    * The structure of the dataset is clear; the spreadsheet covers the BCG vaccination rate for 168 countries in the world in past 41 years. The dataset is not perfect, there exists some missing data for some countries in the period of time. It may cause some problems for our future analysis.
    * The number of countries recorded in the spreadsheet from UNICEF is less than the number of countries covered in the WHO dataset. Therefore, during the analysis of the TB and BCG vaccines, some countries will be ignored.
+   
+### Population dataset
+  * The source is from the World Bank(WB) which is an international financial institution that provides loans and grants to the government of low- and middle income countries for the purpose of pursing capital projects. [Population Data](https://data.worldbank.org/indicator/SP.POP.TOTL?end=1989&start=1960)
+  * The data set is covered all 266 countries in the world and the year covered is from 1980 to 2021.
+  * The variables are mostly discrete expect for some categorical variables indicate each country.
+
+### Number of new HIV infections
+  * The source is from Institute for Health Metrics and Evaluation, Global Burden of Disease(2019). [HIV Infection Data](http://ghdx.healthdata.org/gbd-results-tool)
+  * The data set collects data from WHO member countries and time span for the data set is 1990-2019.
+  * There are 266 countries in total, and the variables we focused on are all discrete integer.
+  
 
 ## Cleaning / transformation
+* Import Library
+```r
+library(readxl)
+library(dplyr)
+library(redav)
+library(mi)
+```
+```{r message=FALSE}
+library(readxl)
+library(dplyr)
+library(redav)
+library(mi)
+library(tidyr)
+```
+
+### TB notification and outcome dataset
+  * Import data
+```r
+tb <- read.csv("Datasets/raw/TB_notifications_2022-10-28.csv")
+tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
+```
+  * Variable Selection
+```{r}
+tb <- read.csv("Datasets/raw/TB_notifications_2022-10-28.csv")
+tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
+```
+  * Merge Data
+```r
+tb_cleaning_1 <- tb_cleaning
+tb_cleaning_1$new_sp_m014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m014, tb_cleaning$newrel_m014)
+tb_cleaning_1$new_sp_m1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m1524, tb_cleaning$newrel_m1524)
+tb_cleaning_1$new_sp_m2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_m3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_m4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m4554, tb_cleaning$newrel_m4554)
+tb_cleaning_1$new_sp_m5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m5564, tb_cleaning$newrel_m5564)
+tb_cleaning_1$new_sp_m65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m65, tb_cleaning$newrel_m65)
+
+tb_cleaning_1$new_sp_f014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f014, tb_cleaning$newrel_f014)
+tb_cleaning_1$new_sp_f1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f1524, tb_cleaning$newrel_f1524)
+tb_cleaning_1$new_sp_f2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_f3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_f4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f4554, tb_cleaning$newrel_f4554)
+tb_cleaning_1$new_sp_f5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f5564, tb_cleaning$newrel_f5564)
+tb_cleaning_1$new_sp_f65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f65, tb_cleaning$newrel_f65)
+
+tb_cleaning_1$hivtest <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest, tb_cleaning$newrel_hivtest)
+tb_cleaning_1$hivtest_pos <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest_pos, tb_cleaning$newrel_hivpos)
+```
+```{r}
+tb_cleaning_1 <- tb_cleaning
+tb_cleaning_1$new_sp_m014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m014, tb_cleaning$newrel_m014)
+tb_cleaning_1$new_sp_m1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m1524, tb_cleaning$newrel_m1524)
+tb_cleaning_1$new_sp_m2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_m3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_m4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m4554, tb_cleaning$newrel_m4554)
+tb_cleaning_1$new_sp_m5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m5564, tb_cleaning$newrel_m5564)
+tb_cleaning_1$new_sp_m65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m65, tb_cleaning$newrel_m65)
+
+tb_cleaning_1$new_sp_f014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f014, tb_cleaning$newrel_f014)
+tb_cleaning_1$new_sp_f1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f1524, tb_cleaning$newrel_f1524)
+tb_cleaning_1$new_sp_f2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_f3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_f4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f4554, tb_cleaning$newrel_f4554)
+tb_cleaning_1$new_sp_f5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f5564, tb_cleaning$newrel_f5564)
+tb_cleaning_1$new_sp_f65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f65, tb_cleaning$newrel_f65)
+
+tb_cleaning_1$hivtest <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest, tb_cleaning$newrel_hivtest)
+tb_cleaning_1$hivtest_pos <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest_pos, tb_cleaning$newrel_hivpos)
+```
+  * Remove missing data
+```r
+tb_cleaning_2 <- select(tb_cleaning_1, country, iso3, year, new_sp, new_labconf, c_newinc, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65)
+tb_cleaning_3 <- subset(tb_cleaning_2, is.na(c_newinc) == FALSE)
+head(tb_cleaning_3)
+```
+```{r}
+tb_cleaning_2 <- select(tb_cleaning_1, country, iso3, year, new_sp, new_labconf, c_newinc, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65)
+tb_cleaning_3 <- subset(tb_cleaning_2, is.na(c_newinc) == FALSE)
+write.csv(tb_cleaning_3, "Datasets/cleaned/tb_cleaning.csv")
+summary(tb_cleaning_3)
+```
+
+### Vaccination dataset
+* Read Data
+```r
+vaccine <- read_excel(path = "../vaccine.xlsx")
+summary(vaccine)
+```
+```{r}
+vaccine <- read_excel(path = "Datasets/raw/vaccine.xlsx")
+summary(vaccine)
+```
+```r
+vaccine_cleaned <- (vaccine %>% select(0:34))
+```
+```{r}
+vaccine_temp <- (vaccine %>% select(0:34))
+vaccine_cleaned <- subset(vaccine_temp, select = -c(unicef_region,vaccine))
+
+summary(vaccine_cleaned)
+```
+
+```r
+vaccine_pivoted <- vaccine_cleaned %>%
+  pivot_longer(cols = -c('iso3','country'),
+               names_to = 'year',
+               values_to = 'vaccination_rate') %>%
+  mutate(year = substr(year, 1, 5))
+
+head(vaccine_pivoted)
+```
+```{r}
+vaccine_pivoted <- vaccine_cleaned %>%
+  pivot_longer(cols = -c('iso3','country'),
+               names_to = 'year',
+               values_to = 'vaccination_rate') %>%
+  mutate(year = substr(year, 1, 5))
+
+head(vaccine_pivoted)
+```
+
+
+
+### Population
+  * Read data
+```r
+df_population <- read.csv("../Datasets/population.csv")
+df_population_1 <- df_population %>% 
+        select(1:2, 25:66) %>% 
+        pivot_longer(cols = -c('Country.Name', 'Country.Code'),
+                     names_to = 'year',
+                     values_to = 'population') %>%
+        mutate(year = substr(year, 2, 5)) %>%
+        rename(country = Country.Name, 
+               iso3 = Country.Code)
+head(df_population_1)
+```
+```{r}
+df_population <- read.csv("Datasets/raw/population.csv")
+df_population_1 <- df_population %>% 
+        select(1:2, 25:66) %>% 
+        pivot_longer(cols = -c('Country.Name', 'Country.Code'),
+                     names_to = 'year',
+                     values_to = 'population') %>%
+        mutate(year = substr(year, 2, 5)) %>%
+        rename(country = Country.Name, 
+               iso3 = Country.Code)
+head(df_population_1)
+```
+* Merged with TB data set
+```r
+df_tb_cleaning <- merge(df_population_1, tb_cleaning_3, by = c('iso3', 'year'))
+df_continent <- read.csv("Datasets/raw/continents2.csv")
+df_continent_1 <- df_continent %>%
+                    select(alpha.3, region) %>%
+                    rename(iso3 = alpha.3, continent = region)
+df_tb_cleaning_1 <- merge(df_continent_1, df_tb_cleaning, by = 'iso3')
+head(df_tb_cleaning_1)
+```
+```{r}
+df_tb_cleaning <- merge(df_population_1, tb_cleaning_3, by = c('iso3', 'year'))
+df_continent <- read.csv("Datasets/raw/continents2.csv")
+df_continent_1 <- df_continent %>%
+                    select(alpha.3, region) %>%
+                    rename(iso3 = alpha.3, continent = region)
+df_tb_cleaning_1 <- merge(df_continent_1, df_tb_cleaning, by = 'iso3')
+write.csv(df_tb_cleaning_1, "Datasets/cleaned/tb_population_geo.csv")
+head(df_tb_cleaning_1)
+```
+
+
+
+### HIV infections
+  * Read Data
+```r
+df_hiv <- read.csv("../Datasets/number-of-people-living-with-hiv.csv")
+df_hiv_1 <- df_hiv %>% 
+        select(2:4) %>%
+        rename(iso3 = Code,
+               year = Year,
+               hiv_num = Prevalence...HIV.AIDS...Sex..Both...Age..All.Ages..Number.)
+
+df_tb_cleaning_2 <- merge(df_tb_cleaning_1, df_hiv_1, by = c('iso3', 'year')) %>%
+                    mutate(tb_infection_rate = c_newinc/population,
+                           hiv_tb_infection_rate = hivtest_pos/hiv_num)
+```
+```{r}
+df_hiv <- read.csv("Datasets/raw/number-of-people-living-with-hiv.csv")
+df_hiv_1 <- df_hiv %>% 
+        select(2:4) %>%
+        rename(iso3 = Code,
+               year = Year,
+               hiv_num = Prevalence...HIV.AIDS...Sex..Both...Age..All.Ages..Number.)
+
+df_tb_cleaning_2 <- merge(df_tb_cleaning_1, df_hiv_1, by = c('iso3', 'year')) %>%
+                    mutate(tb_infection_rate = c_newinc/population,
+                           hiv_tb_infection_rate = hivtest_pos/hiv_num)
+write.csv(df_tb_cleaning_2, "Datasets/cleaned/df_tb_cleaning_2.csv")
+head(df_tb_cleaning_2)
+```
+
 
 ## Missing value analysis
+### TB notification and outcome dataset
+* Before Cleaning
+```r
+colSums(is.na(tb_cleaning))
+```
+```{r}
+colSums(is.na(tb_cleaning))
+```
+```r
+plot_missing(tb_cleaning)
+```
+```{r}
+plot_missing(tb_cleaning)
+```
+
+* After Cleaning
+```r
+colSums(is.na(tb_cleaning_3))
+```
+```{r}
+colSums(is.na(tb_cleaning_3))
+```
+```r
+plot_missing(tb_cleaning_3)
+```
+```{r}
+plot_missing(tb_cleaning_3)
+```
+
+### Vaccination dataset
+* Missing Pattern Before Drop
+```r
+colSums(is.na(vaccine))
+```
+```{r}
+colSums(is.na(vaccine))
+```
+```r
+plot_missing(vaccine)
+```
+```{r}
+plot_missing(vaccine)
+```
+* Missing Pattern After Drop
+```r
+colSums(is.na(vaccine_cleaned))
+```
+```{r}
+colSums(is.na(vaccine_cleaned))
+```
+```r
+plot_missing(vaccine)
+```
+```{r}
+plot_missing(vaccine_cleaned)
+```
+### Population
+```r
+colSums(is.na(df_population))
+```
+```{r}
+colSums(is.na(df_population))
+```
+```r
+plot_missing(df_population)
+```
+```{r}
+plot_missing(df_population)
+```
+
+### HIV infections
+```r
+colSums(is.na(df_hiv))
+```
+```{r}
+colSums(is.na(df_hiv))
+```
+```r
+plot_missing(df_hiv)
+```
+```{r}
+plot_missing(df_hiv)
+```
 
