@@ -1,0 +1,31 @@
+```{r}
+library(plotly)
+library(dy)
+```
+
+```{r}
+vaccine_df = read.csv("vaccine_cleaned.csv")
+```
+
+
+```{r}
+head(vaccine_df)
+```
+
+```{r}
+steps = list(
+  list(args = list()
+       ),
+  list(args = list()
+       ),
+)
+
+fig <- plot_ly(vaccine_df, type='choropleth', locations=vaccine_df$iso3, z=vaccine_df$X2019,colorscale="Viridis",text=vaccine_df$country)
+
+fig <- fig %>% colorbar(title = "Vaccine Rate")
+fig <- fig %>% layout(
+    title = "Vaccine Rate in 2019"
+)
+fig
+```
+
