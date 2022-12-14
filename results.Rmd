@@ -1,1 +1,63 @@
 # Results
+## Import Library and Dataset
+```r
+```
+```{r}
+library(plotly)
+library(ggplot2)
+
+tb_cleaning_3 <- read.csv("Datasets/cleaned/tb_cleaning.csv")
+df_tb_cleaning_2 <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
+vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
+```
+
+## TB
+### Positive cases among years
+```r
+sum_year <- tb_cleaning_3 %>%
+            group_by(year) %>%
+            summarize(total_positive = sum(c_newinc))
+fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
+
+fig
+```
+```{r}
+sum_year <- tb_cleaning_3 %>%
+            group_by(year) %>%
+            summarize(total_positive = sum(c_newinc))
+fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
+
+fig
+```
+### Maps graph
+```
+fig <- plot_ly(df_tb_cleaning_2, type='choropleth', locations=df_tb_cleaning_2$iso3, z=df_tb_cleaning_2$tb_infection_rate, frame = ~year, text=df_tb_cleaning_2$country.x, colorscale="magma")
+
+fig
+```
+```{r}
+fig <- plot_ly(df_tb_cleaning_2, type='choropleth', locations=df_tb_cleaning_2$iso3, z=df_tb_cleaning_2$tb_infection_rate, frame = ~year, text=df_tb_cleaning_2$country.x, colorscale="magma")
+
+fig
+```
+
+
+## Vaccine
+### Map for vaccination rate
+```r
+fig <- plot_ly(vaccine_df, type='choropleth', locations=vaccine_df$iso3, z=vaccine_df$X2019,colorscale="Viridis",text=vaccine_df$country)
+fig <- fig %>% colorbar(title = "Vaccine Rate")
+fig <- fig %>% layout(
+    title = "Vaccine Rate in 2019"
+)
+fig
+```
+```{r}
+fig <- plot_ly(vaccine_cleaned, type='choropleth', locations=vaccine_cleaned$iso3, z=vaccine_cleaned$vaccination_rate,frame = ~year, colorscale="Viridis",text=vaccine_cleaned$country)
+fig <- fig %>% colorbar(title = "Vaccine Rate")
+fig <- fig %>% layout(
+    title = "Vaccine Rate From 1992-2021"
+)
+fig
+```
+
