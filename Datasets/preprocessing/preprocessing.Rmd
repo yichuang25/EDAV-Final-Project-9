@@ -1,0 +1,36 @@
+```{r}
+library(readxl)
+library(dplyr)
+library(redav)
+library(mi)
+knitr::opts_chunk$set(fig.width=20, fig.height=30) 
+```
+
+```{r}
+vaccine <- read_excel(path = "../vaccine.xlsx")
+```
+
+```{r}
+summary(vaccine)
+```
+```{r}
+plot_missing(vaccine)
+```
+```{r}
+vaccine_cleaned <- (vaccine %>% select(0:34))
+```
+
+```{r}
+plot_missing(vaccine_cleaned)
+```
+```{r}
+summary(vaccine_cleaned)
+```
+
+```{r}
+head(vaccine_cleaned)
+```
+```{r}
+write.csv(vaccine_cleaned,"../vaccine_cleaned.csv")
+```
+
