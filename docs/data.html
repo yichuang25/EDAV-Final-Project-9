@@ -465,7 +465,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##     new_sp_f65    newrel_f014   newrel_f1524   newrel_f2534   newrel_f3544   newrel_f4554   newrel_f5564     newrel_f65 
 ##           5729           7147           7178           7174           7174           7175           7177           7179</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="data.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(tb_cleaning)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="after-cleaning" class="section level4 hasAnchor" number="3.3.1.2">
 <h4><span class="header-section-number">3.3.1.2</span> After Cleaning<a href="data.html#after-cleaning" class="anchor-section" aria-label="Anchor link to header"></a></h4>
@@ -475,7 +475,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## new_sp_m4554 new_sp_m5564   new_sp_m65  new_sp_f014 new_sp_f1524 new_sp_f2534 new_sp_f3544 new_sp_f4554 new_sp_f5564   new_sp_f65 
 ##         3413         3419         3430         3435         3446         3437         3437         3433         3444         3444</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="data.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(tb_cleaning_3)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 </div>
 <div id="vaccination-dataset-3" class="section level3 hasAnchor" number="3.3.2">
@@ -494,7 +494,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##          1981          1980 
 ##            64            90</code></pre>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="data.html#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(vaccine)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-18-1.png" width="672" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-24-1.png" width="672" />
 #### Missing Pattern After Drop</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="data.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(vaccine_cleaned))</span></code></pre></div>
 <pre><code>##    iso3 country    2021    2020    2019    2018    2017    2016    2015    2014    2013    2012    2011    2010    2009    2008    2007    2006    2005    2004 
@@ -502,13 +502,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    2003    2002    2001    2000    1999    1998    1997    1996    1995    1994    1993    1992 
 ##       8       8      10      10      10      12      12      11      11      10      11      15</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="data.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(vaccine)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-20-1.png" width="672" />
+<p><img src="finalproj_files/figure-html/unnamed-chunk-26-1.png" width="672" />
 ### Population</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="data.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(df_population_1))</span></code></pre></div>
 <pre><code>##    country       iso3       year population 
 ##          0          0          0         65</code></pre>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="data.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(df_population_1)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
 </div>
 <div id="hiv-infections-1" class="section level3 hasAnchor" number="3.3.3">
@@ -519,7 +519,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##                                                       Year Prevalence...HIV.AIDS...Sex..Both...Age..All.Ages..Number. 
 ##                                                          0                                                          0</code></pre>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="data.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_missing</span>(df_hiv)</span></code></pre></div>
-<p><img src="finalproj_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 
 </div>
 </div>
