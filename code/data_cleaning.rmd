@@ -1,0 +1,160 @@
+---
+title: "data_cleaning"
+author: "Taichen Zhou"
+date: '2022-12-13'
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(redav)
+library(dplyr)
+library(tidyr)
+
+library(ggplot2)
+library(plotly)
+```
+
+```{r}
+tb <- read.csv("Datasets/TB_notifications_2022-10-28.csv")
+```
+```{r}
+tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
+```
+
+```{r}
+colSums(is.na(tb_cleaning))
+```
+
+```{r}
+tb_cleaning_1 <- tb_cleaning
+tb_cleaning_1$new_sp_m014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m014, tb_cleaning$newrel_m014)
+tb_cleaning_1$new_sp_m1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m1524, tb_cleaning$newrel_m1524)
+tb_cleaning_1$new_sp_m2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_m3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_m4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m4554, tb_cleaning$newrel_m4554)
+tb_cleaning_1$new_sp_m5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m5564, tb_cleaning$newrel_m5564)
+tb_cleaning_1$new_sp_m65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m65, tb_cleaning$newrel_m65)
+
+tb_cleaning_1$new_sp_f014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f014, tb_cleaning$newrel_f014)
+tb_cleaning_1$new_sp_f1524 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f1524, tb_cleaning$newrel_f1524)
+tb_cleaning_1$new_sp_f2534 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f2534, tb_cleaning$newrel_m2534)
+tb_cleaning_1$new_sp_f3544 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f3544, tb_cleaning$newrel_m3544)
+tb_cleaning_1$new_sp_f4554 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f4554, tb_cleaning$newrel_f4554)
+tb_cleaning_1$new_sp_f5564 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f5564, tb_cleaning$newrel_f5564)
+tb_cleaning_1$new_sp_f65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_f65, tb_cleaning$newrel_f65)
+
+tb_cleaning_1$hivtest <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest, tb_cleaning$newrel_hivtest)
+tb_cleaning_1$hivtest_pos <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest_pos, tb_cleaning$newrel_hivpos)
+```
+
+```{r}
+tb_cleaning_2 <- select(tb_cleaning_1, country, iso3, year, new_sp, new_labconf, c_newinc, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65)
+```
+
+```{r}
+head(tb_cleaning_2)
+```
+
+```{r}
+tb_cleaning_3 <- subset(tb_cleaning_2, is.na(c_newinc) == FALSE)
+plot_missing(tb_cleaning_3)
+```
+```{r}
+write.csv(tb_cleaning_3, "tb_cleaning_3.csv")
+```
+
+```{r}
+summary(tb_cleaning_3)
+```
+
+
+### Positive cases among years
+```{r}
+sum_year <- tb_cleaning_3 %>%
+            group_by(year) %>%
+            summarize(total_positive = sum(c_newinc))
+fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
+
+fig
+```
+
+```{r}
+substr('X1987', 2, 5)
+```
+
+### Read Population dataset and preprocessing it
+```{r}
+df_population <- read.csv("Datasets/population.csv")
+df_population_1 <- df_population %>% 
+        select(1:2, 25:66) %>% 
+        pivot_longer(cols = -c('Country.Name', 'Country.Code'),
+                     names_to = 'year',
+                     values_to = 'population') %>%
+        mutate(year = substr(year, 2, 5)) %>%
+        rename(country = Country.Name, 
+               iso3 = Country.Code)
+head(df_population_1)
+```
+### Join the tb dataset
+```{r}
+df_tb_cleaning <- merge(df_population_1, tb_cleaning_3, by = c('iso3', 'year'))
+```
+### Read continent dataset
+```{r}
+df_continent <- read.csv("Datasets/continents2.csv")
+df_continent_1 <- df_continent %>%
+                    select(alpha.3, region) %>%
+                    rename(iso3 = alpha.3, continent = region)
+head(df_continent_1)
+```
+### Join two datasets
+```{r}
+df_tb_cleaning_1 <- merge(df_continent_1, df_tb_cleaning, by = 'iso3')
+View(df_tb_cleaning_1)
+```
+
+### HIV Dataset
+source: https://ourworldindata.org/grapher/number-of-people-living-with-hiv?time=2005
+```{r}
+df_hiv <- read.csv("Datasets/number-of-people-living-with-hiv.csv")
+df_hiv_1 <- df_hiv %>% 
+        select(2:4) %>%
+        rename(iso3 = Code,
+               year = Year,
+               hiv_num = Prevalence...HIV.AIDS...Sex..Both...Age..All.Ages..Number.)
+
+df_tb_cleaning_2 <- merge(df_tb_cleaning_1, df_hiv_1, by = c('iso3', 'year')) %>%
+                    mutate(tb_infection_rate = c_newinc/population,
+                           hiv_tb_infection_rate = hivtest_pos/hiv_num)
+View(df_tb_cleaning_2)
+```
+
+### Maps graph
+```{r}
+
+fig <- plot_ly(df_tb_cleaning_2, type='choropleth', locations=df_tb_cleaning_2$iso3, z=df_tb_cleaning_2$tb_infection_rate, frame = ~year, text=df_tb_cleaning_2$country.x, colorscale="magma")
+
+fig
+```
+
+```{r}
+hiv_graph <- df_tb_cleaning_2 %>%
+            subset(df_tb_cleaning_2$year == 2019)
+```
+
+```{r, fig1, fig.height = 3, fig.width = 5}
+
+fig <- hiv_graph %>%
+    plot_ly(x = ~tb_infection_rate, y = ~country.y, name = 'tb infection rate', type = 'scatter', mode = 'markers') %>% 
+    add_trace(x = ~hiv_tb_infection_rate, name = 'tb infection rate of HIV patients', mode = 'markers')
+fig <-  fig %>% layout(xaxis = list(range=c(0,0.05)), 
+           autosize = F,
+           width = 800,
+           height = 2000)
+fig
+```
+
