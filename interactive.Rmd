@@ -1,11 +1,3 @@
----
-output: html_document
----
-```{r setup}
-library(r2d3)
-
-```
-
 # Interactive component
 
 <!-- Load d3.js -->
