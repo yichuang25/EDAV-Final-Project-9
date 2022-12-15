@@ -68,6 +68,7 @@ sum_year <- tb_original %>%
 fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines', fill = 'tozeroy')
 fig <- fig %>% 
   layout(
+    plot_bgcolor='#BBBBBB',
     yaxis = list(title='Total Positive')
   )
 
@@ -86,7 +87,8 @@ fig
 ```{r}
 p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
   geom_histogram(binwidth=1) +
-  ylab("Sum of TB cases")
+  ylab("Sum of TB cases") +
+  scale_fill_brewer(palette = "Spectral")
 fig <- ggplotly(p)
 fig
 
@@ -100,8 +102,9 @@ fig %>% layout(
 )
 ```
 ```{r}
-fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent, colors = 'Spectral')
 fig %>% layout(
+  plot_bgcolor='#BBBBBB',
   title = "Infection Rate by Continent",
   xaxis = list(title='Continent')
 )
@@ -289,19 +292,91 @@ fig
 ## Vaccine
 ### Vaccination Rate by Continent
 ```r
-fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~continent,frame = ~year, type='box',color=~continent)
-fig <- fig %>% layout(
-  title = "Vaccination Rate by Continent",
-  yaxis = list(title='Continent')
-)
+fig1 <- plot_ly(data=vaccine_tb_rate, 
+                x = ~vaccination_rate, 
+                y=~continent,frame = ~year,
+                colors = "Spectral",
+                type='box',color=~continent) %>% 
+        layout(title = "Vaccination Rate by Continent",
+               yaxis = list(title='Continent'),
+               xaxis = list(range=c(0,100)),
+               showlegend = FALSE)
+
+vaccine_graph <- vaccine_tb_rate %>% 
+        select(continent, year, tb_infection_rate) %>% 
+        replace(is.na(.), 0) %>% 
+        group_by(continent, year) %>% 
+        summarize(tb_infection_rate = mean(tb_infection_rate))
+
+fig2 <- vaccine_tb_rate %>% 
+        select(continent, year, tb_infection_rate) %>% 
+        replace(is.na(.), 0) %>% 
+        group_by(continent, year) %>%
+        summarize(tb_infection_rate = mean(tb_infection_rate)) %>% 
+        mutate(tb_infection_rate = tb_infection_rate*100) %>% 
+        plot_ly(x = ~year, 
+                y = ~tb_infection_rate,
+                color = ~continent,
+                mode = "lines+markers",
+                colors = "Spectral") %>% 
+        layout(title = "Incidence Rate among Years by Continents",
+               yaxis = list(ticksuffix = "%"),
+               legend = list(orientation = 'h'))
+fig <- subplot(fig1, fig2, nrows = 1, margin = 0.03) %>% 
+      layout(plot_bgcolor='#e5ecf6', 
+       xaxis = list( 
+         zerolinecolor = '#ffff', 
+         zerolinewidth = 2, 
+         gridcolor = 'ffff'), 
+       yaxis = list( 
+         zerolinecolor = '#ffff', 
+         zerolinewidth = 2, 
+         gridcolor = 'ffff'))
 fig
 ```
-```{r}
-fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~continent,frame = ~year, type='box',color=~continent)
-fig <- fig %>% layout(
-  title = "Vaccination Rate by Continent",
-  yaxis = list(title='Continent')
-)
+```{r warning=FALSE}
+fig1 <- plot_ly(data=vaccine_tb_rate, 
+                x = ~vaccination_rate, 
+                y=~continent,frame = ~year,
+                colors = "Spectral",
+                type='box',color=~continent) %>% 
+        layout(plot_bgcolor='#BBBBBB',
+               title = "Vaccination Rate by Continent",
+               yaxis = list(title='Continent'),
+               xaxis = list(range=c(0,100)),
+               showlegend = FALSE)
+
+vaccine_graph <- vaccine_tb_rate %>% 
+        select(continent, year, tb_infection_rate) %>% 
+        replace(is.na(.), 0) %>% 
+        group_by(continent, year) %>% 
+        summarize(tb_infection_rate = mean(tb_infection_rate))
+
+fig2 <- vaccine_tb_rate %>% 
+        select(continent, year, tb_infection_rate) %>% 
+        replace(is.na(.), 0) %>% 
+        group_by(continent, year) %>%
+        summarize(tb_infection_rate = mean(tb_infection_rate)) %>% 
+        mutate(tb_infection_rate = tb_infection_rate*100) %>% 
+        plot_ly(x = ~year, 
+                y = ~tb_infection_rate,
+                color = ~continent,
+                mode = "lines+markers",
+                colors = "Spectral") %>% 
+        layout(plot_bgcolor='#BBBBBB',
+               title = "Incidence Rate among Years by Continents",
+               yaxis = list(ticksuffix = "%"),
+               legend = list(orientation = 'h'))
+fig <- subplot(fig1, fig2, nrows = 1, margin = 0.03) %>% 
+      layout(plot_bgcolor='#BBBBBB', 
+       xaxis = list( 
+         zerolinecolor = '#ffff', 
+         zerolinewidth = 2, 
+         gridcolor = 'ffff'), 
+       yaxis = list( 
+         zerolinecolor = '#ffff', 
+         zerolinewidth = 2, 
+         gridcolor = 'ffff'))
 fig
 ```
 ### Map for vaccination rate
@@ -332,47 +407,7 @@ vaccine_tb_group <- vaccine_tb_count %>%
   group_by(year,continent) %>% 
   summarise(sum_inc_in_million=sum(c_newinc)/1000000,sum_vac_million=sum(vaccination_count_million),.groups='drop')
     
-vaccine_tb_group
-fig <- plot_ly(data=vaccine_tb_group)
-fig <- fig %>% add_trace(x=~year, y=~sum_vac_million, color=~continent, line = list(shape = 'linear', dash = 'dot'),
-    mode = "lines+markers",text="Number of Vaccination",
-    marker = list(symbol = "star_diamond", size = 5)
-) 
-
-ay <- list(
-  tickfont = list(color = "black"),
-  overlaying = "y",
-  side = "right",
-  title = "Number of Vaccination (in Million)")
-
-
-fig <- fig %>% add_trace(
-    x=~year, y=~sum_inc_in_million, color=~continent, mode = "lines+markers", yaxis = "y2", text="Number of Vaccination"
-)
-
-fig <- fig %>% layout(
-  title = "TB cases and Vaccination", yaxis2 = ay,
-  xaxis = list(title="Year"),
-  yaxis = list(title="Number of TB (in Million)")
-)%>%
-  layout(
-  legend = list(x = 1.1, y = 0)
-)
-
-fig
-```
-```{r}
-vaccine_tb_count <- vaccine_inc %>% 
-  mutate(vaccination_count_million = (vaccination_rate/100) * (population/1000000)) %>%
-  select(1:3,5:9) %>% 
-  replace(is.na(.),0)
-vaccine_tb_group <- vaccine_tb_count %>% 
-  select(2,4,3,8) %>%
-  group_by(year,continent) %>% 
-  summarise(sum_inc_in_million=sum(c_newinc)/1000000,sum_vac_million=sum(vaccination_count_million),.groups='drop')
-    
-vaccine_tb_group
-fig <- plot_ly(data=vaccine_tb_group)
+fig <- plot_ly(data=vaccine_tb_group, colors='Spectral')
 fig <- fig %>% add_trace(x=~year, y=~sum_vac_million, color=~continent, line = list(shape = 'linear', dash = 'dot'),
     mode = "lines+markers",text="Number of Vaccination",
     marker = list(symbol = "star_diamond", size = 5)
@@ -395,6 +430,46 @@ fig <- fig %>% layout(
   yaxis = list(title="Number of TB (in Million)")
 )%>%
   layout(
+  plot_bgcolor='#BBBBBB',
+  legend = list(x = 1.1, y = 0)
+)
+
+fig
+```
+```{r}
+vaccine_tb_count <- vaccine_inc %>% 
+  mutate(vaccination_count_million = (vaccination_rate/100) * (population/1000000)) %>%
+  select(1:3,5:9) %>% 
+  replace(is.na(.),0)
+vaccine_tb_group <- vaccine_tb_count %>% 
+  select(2,4,3,8) %>%
+  group_by(year,continent) %>% 
+  summarise(sum_inc_in_million=sum(c_newinc)/1000000,sum_vac_million=sum(vaccination_count_million),.groups='drop')
+    
+fig <- plot_ly(data=vaccine_tb_group, colors='Spectral')
+fig <- fig %>% add_trace(x=~year, y=~sum_vac_million, color=~continent, line = list(shape = 'linear', dash = 'dot'),
+    mode = "lines+markers",text="Number of Vaccination",
+    marker = list(symbol = "star_diamond", size = 5)
+) 
+
+ay <- list(
+  tickfont = list(color = "black"),
+  overlaying = "y",
+  side = "right",
+  title = "Number of Vaccination (in Million)")
+
+
+fig <- fig %>% add_trace(
+    x=~year, y=~sum_inc_in_million, color=~continent, mode = "lines+markers", yaxis = "y2", text="Number of Cases"
+)
+
+fig <- fig %>% layout(
+  title = "TB cases and Vaccination", yaxis2 = ay,
+  xaxis = list(title="Year"),
+  yaxis = list(title="Number of TB (in Million)")
+)%>%
+  layout(
+  plot_bgcolor='#BBBBBB',
   legend = list(x = 1.1, y = 0)
 )
 
@@ -417,6 +492,7 @@ treemap(tree,
         vColor = "vaccination_rate",
         type='value',
         palette = 'Spectral',
+        
         title = 'Number of incidence in 2019'
         )
 
