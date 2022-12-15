@@ -51,8 +51,7 @@ head(vaccine_tb_rate)
 ```
 
 
-## TB
-### Positive cases among years
+## TB Positive Cases From 1980 - 2021
 ```r
 sum_year <- tb_original %>%
             group_by(year) %>%
@@ -69,12 +68,13 @@ fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode 
 fig <- fig %>% 
   layout(
     plot_bgcolor='#BBBBBB',
-    yaxis = list(title='Total Positive')
+    yaxis = list(title='Total Positive'),
+    title = 'Total Positive Test(1980-2021)'
   )
 
 fig
 ```
-### TB Cases by Continents
+## TB Cases by Continents From 1992-2019
 ```
 p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
   geom_histogram(binwidth=1) +
@@ -87,13 +87,14 @@ fig
 ```{r}
 p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
   geom_histogram(binwidth=1) +
-  ylab("Sum of TB cases") +
-  scale_fill_brewer(palette = "Spectral")
+  ylab("Sum of TB Cases") +
+  scale_fill_brewer(palette = "Spectral") + 
+  ggtitle("TB Cases by Continent(1992-2019)")
 fig <- ggplotly(p)
 fig
 
 ```
-### Infection Rate by Continent
+## Infection Rate by Continent
 ```r 
 fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
 fig %>% layout(
@@ -109,7 +110,7 @@ fig %>% layout(
   xaxis = list(title='Continent')
 )
 ```
-### Age and Gender Plots
+## Age and Gender Plots
 ```r
 age_graph <- tb_cleaning %>%
             select(iso3, year, continent, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, 
@@ -229,7 +230,7 @@ g3 <- age_graph %>%
 
 
 
-### Dot Plot
+## TB Incident Among HIV and Non-HIV Patients
 ```r
 hiv_graph <- tb_cleaning %>%
             select(iso3, year, continent, country, hiv_num, tb_infection_rate, hiv_tb_infection_rate) %>%
@@ -276,7 +277,7 @@ g <- hiv_graph %>%
 g
 ```
 
-### Maps graph
+## Map graph for TB Infection Rate
 ```r 
 fig <- plot_ly(tb_cleaning, type='choropleth', locations=tb_cleaning$iso3, z=tb_cleaning$tb_infection_rate, frame = ~year, text=tb_cleaning$country.x, colorscale="magma")
 
@@ -289,8 +290,7 @@ fig
 ```
 
 
-## Vaccine
-### Vaccination Rate by Continent
+## Vaccination Rate by Continent
 ```r
 fig1 <- plot_ly(data=vaccine_tb_rate, 
                 x = ~vaccination_rate, 
@@ -369,6 +369,7 @@ fig2 <- vaccine_tb_rate %>%
                legend = list(orientation = 'h'))
 fig <- subplot(fig1, fig2, nrows = 1, margin = 0.03) %>% 
       layout(plot_bgcolor='#BBBBBB', 
+        title = "Vaccination Rate and Incidence Rate Among Continents",
        xaxis = list( 
          zerolinecolor = '#ffff', 
          zerolinewidth = 2, 
@@ -379,7 +380,7 @@ fig <- subplot(fig1, fig2, nrows = 1, margin = 0.03) %>%
          gridcolor = 'ffff'))
 fig
 ```
-### Map for vaccination rate
+## Map for vaccination rate
 ```r
 fig <- plot_ly(vaccine_df, type='choropleth', locations=vaccine_df$iso3, z=vaccine_df$X2019,colorscale="Viridis",text=vaccine_df$country)
 fig <- fig %>% colorbar(title = "Vaccine Rate")
@@ -396,7 +397,7 @@ fig <- fig %>% layout(
 )
 fig
 ```
-### Vaccination and TB Cases
+## Vaccination and TB Cases by Continent
 ```r
 vaccine_tb_count <- vaccine_inc %>% 
   mutate(vaccination_count_million = (vaccination_rate/100) * (population/1000000)) %>%
@@ -464,7 +465,7 @@ fig <- fig %>% add_trace(
 )
 
 fig <- fig %>% layout(
-  title = "TB cases and Vaccination", yaxis2 = ay,
+  title = "TB cases and Vaccination by Continents", yaxis2 = ay,
   xaxis = list(title="Year"),
   yaxis = list(title="Number of TB (in Million)")
 )%>%
@@ -476,7 +477,7 @@ fig <- fig %>% layout(
 fig
 ```
 
-#### Tree plot
+## Tree plot
 ```{r}
 tree <- vaccine_inc %>% 
   filter(year == 2019) %>% 

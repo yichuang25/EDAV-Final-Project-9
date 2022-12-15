@@ -1,10 +1,3 @@
----
-output: html_document
----
-```{r setup}
-library(r2d3)
-
-```
 
 # Interactive component
 
@@ -19,7 +12,7 @@ library(r2d3)
 <svg id="map"></svg>
 
 
-<script>
+
 var margin = {top: 20, right: 10, bottom: 40, left: 100},
     width = 600 - margin.left - margin.right,
        height = 400 - margin.top - margin.bottom;
@@ -143,4 +136,5 @@ myDataPromises = Promise.all(promises).then(function(topo) {
   svg.select(".legendQuant")
 	  .call(legend);
     })
-</script>
+
+
