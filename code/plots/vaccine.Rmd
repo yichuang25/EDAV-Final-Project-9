@@ -10,6 +10,7 @@ library(ggplot2)
 df_population <- read.csv("../../Datasets/cleaned/df_population.csv")
 df_continent <- read.csv("../../Datasets/cleaned/continent.csv")
 tb_cleaning <- read.csv("../../Datasets/cleaned/df_tb_cleaning_2.csv")
+tb_original <- read.csv("../../Datasets/cleaned/tb_cleaning.csv")
 tb_population_geo <- read.csv("../../Datasets/cleaned/tb_population_geo.csv")
 vaccine_cleaned <- read.csv("../../Datasets/cleaned/vaccine_cleaned.csv")
 vaccine_pivoted <- read.csv("../../Datasets/cleaned/vaccine_pivoted.csv")
@@ -42,8 +43,97 @@ fig
 ```
 
 ```{r}
+head(vaccine_population_geo %>% group_by(continent,country))
+```
+```{r}
+fig <- plot_ly(vaccine_inc , x=~vaccination_rate, y=~continent, frame = ~year, type='scatter',color=~continent)
+fig
+```
 
+```{r}
+new_incidence <- tb_population_geo %>% select(2,4,10)
+head(new_incidence)
+```
+```{r}
+vaccine_inc <- merge(new_incidence,vaccine_population_geo,by=c('iso3','year'))
+head(vaccine_inc)
+```
+
+```{r}
+fig <- plot_ly(data=vaccine_inc, x = ~c_newinc, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter',size=~population)
+fig <- fig %>% layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+fig <- fig %>% layout(
+    title = "Vaccine Rate and TB Cases",
+    xaxis = list(title = 'TB cases'),
+    yaxis = list(title = 'Vaccination Rate',range=c(20,100))
+)
+fig
+```
+```{r}
+tb_rate <- tb_cleaning %>% select(2:3,28)
+head(tb_rate)
+```
+```{r}
+vaccine_tb_rate <- merge(tb_rate, vaccine_inc, by=c('iso3','year'))
+head(vaccine_tb_rate)
+```
+```{r}
+fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~tb_infection_rate,color=~continent,frame=~year,text=~country,type='scatter',size=~c_newinc)
+
+fig <- fig %>%
+  animation_opts(
+    1000, easing = "elastic", redraw = FALSE
+  )
+fig <- fig %>% layout(
+    title = "Vaccine Rate and TB Cases",
+    xaxis = list(title = 'Vaccination Rate',range=c(20,100)),
+    yaxis = list(title = 'TB Incidence Rate',range=c(0,0.01))
+)
+fig
+```
+```{r}
+fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig %>% layout(
+  title = "Vaccination Rate by Continent",
+  yaxis = list(title='Continent')
+)
+
+```
+```{r}
+
+fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig %>% layout(
+  title = "Infection Rate by Continent",
+  xaxis = list(title='Continent')
+)
 ```
 
 
+```{r}
+sum_year <- tb_original %>%
+            group_by(year) %>%
+            summarize(total_positive = sum(c_newinc))
+fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines', fill = 'tozeroy')
+fig <- fig %>% 
+  layout(
+    yaxis = list(title='Total Positive')
+  )
+
+fig
+```
+```{r}
+p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
+  geom_histogram(binwidth=1) +
+  ylab("Sum of TB cases")
+fig <- ggplotly(p)
+fig
+```
 

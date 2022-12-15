@@ -168,13 +168,12 @@ head(df_population_1)
 ```{r}
 df_population <- read.csv("Datasets/raw/population.csv")
 df_population_1 <- df_population %>% 
-        select(1:2, 25:66) %>% 
-        pivot_longer(cols = -c('Country.Name', 'Country.Code'),
+        select(2, 25:66) %>% 
+        pivot_longer(cols = -c('Country.Code'),
                      names_to = 'year',
                      values_to = 'population') %>%
         mutate(year = substr(year, 2, 5)) %>%
-        rename(country = Country.Name, 
-               iso3 = Country.Code)
+        rename(iso3 = Country.Code)
 write.csv(df_population_1, "Datasets/cleaned/df_population.csv")
 head(df_population_1)
 ```
@@ -200,7 +199,19 @@ write.csv(df_tb_cleaning_1, "Datasets/cleaned/tb_population_geo.csv")
 head(df_tb_cleaning_1)
 ```
 
-
+#### Merged with vaccine data set
+```r
+vaccine_population <- merge(vaccine_pivoted, df_population_1, by=c('iso3','year','country'))
+vaccine_population_geo <- merge(df_continent_1, vaccine_population, by='iso3')
+write.csv(vaccine_population_geo, "Datasets/cleaned/vaccine_population_geo.csv")
+head(vaccine_population_geo)
+```
+```{r}
+vaccine_population <- merge(vaccine_pivoted, df_population_1, by=c('iso3','year'))
+vaccine_population_geo <- merge(df_continent_1, vaccine_population, by='iso3')
+write.csv(vaccine_population_geo, "Datasets/cleaned/vaccine_population_geo.csv")
+head(vaccine_population_geo)
+```
 
 ### HIV infections
 #### Read Data and merge with TB
