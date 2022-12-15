@@ -1,28 +1,60 @@
 # Results
 ## Import Library and Dataset
 ```r
+library(dplyr)
+library(tidyverse)
 library(plotly)
 library(ggplot2)
+library(treemap)
 
-tb_cleaning_3 <- read.csv("Datasets/cleaned/tb_cleaning.csv")
-df_tb_cleaning_2 <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
-vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
+df_population <- read.csv("Datasets/cleaned/df_population.csv")
+df_continent <- read.csv("Datasets/cleaned/continent.csv")
+tb_cleaning <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
+tb_original <- read.csv("Datasets/cleaned/tb_cleaning.csv")
+tb_population_geo <- read.csv("Datasets/cleaned/tb_population_geo.csv")
+vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_cleaned.csv")
+vaccine_pivoted <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
 
 ```
 ```{r}
+library(dplyr)
+library(tidyverse)
 library(plotly)
 library(ggplot2)
+library(treemap)
 
-tb_cleaning_3 <- read.csv("Datasets/cleaned/tb_cleaning.csv")
-df_tb_cleaning_2 <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
-vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
+df_population <- read.csv("Datasets/cleaned/df_population.csv")
+df_continent <- read.csv("Datasets/cleaned/continent.csv")
+tb_cleaning <- read.csv("Datasets/cleaned/df_tb_cleaning_2.csv")
+tb_original <- read.csv("Datasets/cleaned/tb_cleaning.csv")
+tb_population_geo <- read.csv("Datasets/cleaned/tb_population_geo.csv")
+vaccine_cleaned <- read.csv("Datasets/cleaned/vaccine_cleaned.csv")
+vaccine_pivoted <- read.csv("Datasets/cleaned/vaccine_pivoted.csv")
 vaccine_population_geo <- read.csv("Datasets/cleaned/vaccine_population_geo.csv")
 ```
+
+## Merge Vaccine Data with TB Data
+```r
+new_incidence <- tb_population_geo %>% select(2,4,10)
+vaccine_inc <- merge(new_incidence,vaccine_population_geo,by=c('iso3','year'))
+tb_rate <- tb_cleaning %>% select(2:3,28)
+vaccine_tb_rate <- merge(tb_rate, vaccine_inc, by=c('iso3','year'))
+head(vaccine_tb_rate)
+```
+
+```{r}
+new_incidence <- tb_population_geo %>% select(iso3,year,c_newinc)
+vaccine_inc <- merge(new_incidence,vaccine_population_geo,by=c('iso3','year'))
+tb_rate <- tb_cleaning %>% select(iso3,year,tb_infection_rate)
+vaccine_tb_rate <- merge(tb_rate, vaccine_inc, by=c('iso3','year'))
+head(vaccine_tb_rate)
+```
+
 
 ## TB
 ### Positive cases among years
 ```r
-sum_year <- tb_cleaning_3 %>%
+sum_year <- tb_original %>%
             group_by(year) %>%
             summarize(total_positive = sum(c_newinc))
 fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
@@ -30,27 +62,248 @@ fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode 
 fig
 ```
 ```{r}
-sum_year <- tb_cleaning_3 %>%
+sum_year <- tb_original %>%
             group_by(year) %>%
             summarize(total_positive = sum(c_newinc))
-fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
+fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines', fill = 'tozeroy')
+fig <- fig %>% 
+  layout(
+    yaxis = list(title='Total Positive')
+  )
 
 fig
 ```
+### TB Cases by Continents
+```
+p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
+  geom_histogram(binwidth=1) +
+  ylab("Sum of TB cases")
+fig <- ggplotly(p)
+fig
+```
+
+
+```{r}
+p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
+  geom_histogram(binwidth=1) +
+  ylab("Sum of TB cases")
+fig <- ggplotly(p)
+fig
+
+```
+### Infection Rate by Continent
+```r 
+fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig %>% layout(
+  title = "Infection Rate by Continent",
+  xaxis = list(title='Continent')
+)
+```
+```{r}
+fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig %>% layout(
+  title = "Infection Rate by Continent",
+  xaxis = list(title='Continent')
+)
+```
+### Age and Gender Plots
+```r
+age_graph <- tb_cleaning %>%
+            select(iso3, year, continent, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, 
+                   new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, 
+                   new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65) %>%
+            replace(is.na(.), 0) %>%
+            group_by(year, continent) %>%
+            summarize_if(is.numeric, sum) %>%
+            filter(year == 2019) %>%
+            rename(male_0to14 = new_sp_m014,
+                   male_15to24 = new_sp_m1524,
+                   male_25to24 = new_sp_m2534,
+                   male_35to24 = new_sp_m3544,
+                   male_45to24 = new_sp_m4554,
+                   male_55to24 = new_sp_m5564,
+                   male_65 = new_sp_m65,
+                   female_0to14 = new_sp_f014,
+                   female_15to24 = new_sp_f1524,
+                   female_25to24 = new_sp_f2534,
+                   female_35to24 = new_sp_f3544,
+                   female_45to24 = new_sp_f4554,
+                   female_55to24 = new_sp_f5564,
+                   female_65 = new_sp_f65) %>%
+            pivot_longer(cols = -c("year", "continent"),
+                         names_to = c('gender', 'age'),
+                         names_sep = "_",
+                         values_to = 'Freq')
+g1 <- age_graph %>%
+    ggplot(aes(fill = age, y = continent, x = Freq)) + 
+    geom_bar(position = "fill", stat = "identity", show.legend = FALSE) +
+    facet_grid(gender~., scales = "free_y", space = "free_y") +
+    scale_fill_brewer(palette = "Spectral") + 
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+g2 <- age_graph %>%
+      group_by(age, gender) %>%
+      summarize(sum = sum(Freq), .groups = 'drop') %>%
+      filter(gender == 'male') %>%
+      ggplot(aes(x = age, y = sum, fill = age)) +
+      geom_bar(stat = "identity") +
+      scale_fill_brewer(palette = "Spectral") +
+      ggtitle("Male TB Patient among ages") + 
+      theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+g3 <- age_graph %>% 
+      group_by(age, gender) %>% 
+      summarize(sum = sum(Freq), .groups = 'drop') %>% 
+      filter(gender == 'female') %>% 
+      ggplot(aes(x = age, y = sum, fill = age)) +
+      geom_bar(stat = "identity", show.legend = FALSE) + 
+      scale_fill_brewer(palette = "Spectral") +
+      ggtitle("Female TB Patient among ages") + 
+      theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+(g2|g3)/g1
+```
+
+```{r}
+age_graph <- tb_cleaning %>%
+            select(iso3, year, continent, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, 
+                   new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, 
+                   new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65) %>%
+            replace(is.na(.), 0) %>%
+            group_by(year, continent) %>%
+            summarize_if(is.numeric, sum) %>%
+            filter(year == 2019) %>%
+            rename(male_0to14 = new_sp_m014,
+                   male_15to24 = new_sp_m1524,
+                   male_25to24 = new_sp_m2534,
+                   male_35to24 = new_sp_m3544,
+                   male_45to24 = new_sp_m4554,
+                   male_55to24 = new_sp_m5564,
+                   male_65 = new_sp_m65,
+                   female_0to14 = new_sp_f014,
+                   female_15to24 = new_sp_f1524,
+                   female_25to24 = new_sp_f2534,
+                   female_35to24 = new_sp_f3544,
+                   female_45to24 = new_sp_f4554,
+                   female_55to24 = new_sp_f5564,
+                   female_65 = new_sp_f65) %>%
+            pivot_longer(cols = -c("year", "continent"),
+                         names_to = c('gender', 'age'),
+                         names_sep = "_",
+                         values_to = 'Freq')
+```
+
+```{r, fig.height=5}
+g1 <- age_graph %>%
+    ggplot(aes(fill = age, y = continent, x = Freq)) + 
+    geom_bar(position = "fill", stat = "identity", show.legend = FALSE) +
+    facet_grid(gender~., scales = "free_y", space = "free_y") +
+    scale_fill_brewer(palette = "Spectral") + 
+    theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+g2 <- age_graph %>%
+      group_by(age, gender) %>%
+      summarize(sum = sum(Freq), .groups = 'drop') %>%
+      filter(gender == 'male') %>%
+      ggplot(aes(x = age, y = sum, fill = age)) +
+      geom_bar(stat = "identity") +
+      scale_fill_brewer(palette = "Spectral") +
+      ggtitle("Male TB Patient among ages") + 
+      theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+g3 <- age_graph %>% 
+      group_by(age, gender) %>% 
+      summarize(sum = sum(Freq), .groups = 'drop') %>% 
+      filter(gender == 'female') %>% 
+      ggplot(aes(x = age, y = sum, fill = age)) +
+      geom_bar(stat = "identity", show.legend = FALSE) + 
+      scale_fill_brewer(palette = "Spectral") +
+      ggtitle("Female TB Patient among ages") + 
+      theme(axis.text.x = element_text(angle = 30, vjust = 1, hjust=1))
+
+(g2|g3)/g1
+```
+
+
+
+### Dot Plot
+```r
+hiv_graph <- tb_cleaning %>%
+            select(iso3, year, continent, country, hiv_num, tb_infection_rate, hiv_tb_infection_rate) %>%
+            filter(tb_cleaning$year == 2019 & tb_cleaning$hiv_num >= 500) %>%
+            replace(is.na(.), 0) %>%
+            mutate(country = fct_reorder(country, hiv_tb_infection_rate))
+            
+hiv_graph <- droplevels(hiv_graph)
+```
+```r
+g <- hiv_graph %>%
+  select('country', 'tb_infection_rate', 'hiv_tb_infection_rate') %>%
+  gather(key = 'type', value = 'percentage', tb_infection_rate, hiv_tb_infection_rate) %>%
+  ggplot(aes(x = percentage, y = reorder(country, type = 'hiv_tb_infection_rate', percentage), color = type)) +
+  facet_grid(hiv_graph$continent~., scales = "free_y", space = "free_y") + 
+  geom_point() +
+  ggtitle("TB Incident among Non_Hiv and Hiv Patient") +
+  ylab("") +
+  scale_fill_brewer(palette = "Spectral")
+g
+```
+
+```{r}
+hiv_graph <- tb_cleaning %>%
+            select(iso3, year, continent, country, hiv_num, tb_infection_rate, hiv_tb_infection_rate) %>%
+            filter(tb_cleaning$year == 2019 & tb_cleaning$hiv_num >= 500) %>%
+            replace(is.na(.), 0) %>%
+            mutate(country = fct_reorder(country, hiv_tb_infection_rate))
+            
+hiv_graph <- droplevels(hiv_graph)
+
+```
+
+```{r, fig.width=15, fig.height=20}
+g <- hiv_graph %>%
+  select('country', 'tb_infection_rate', 'hiv_tb_infection_rate') %>%
+  gather(key = 'type', value = 'percentage', tb_infection_rate, hiv_tb_infection_rate) %>%
+  ggplot(aes(x = percentage, y = reorder(country, type = 'hiv_tb_infection_rate', percentage), color = type)) +
+  facet_grid(hiv_graph$continent~., scales = "free_y", space = "free_y") + 
+  geom_point() +
+  ggtitle("TB Incident among Non_Hiv and Hiv Patient") +
+  ylab("") +
+  scale_fill_brewer(palette = "Spectral")
+g
+```
+
 ### Maps graph
-```
-fig <- plot_ly(df_tb_cleaning_2, type='choropleth', locations=df_tb_cleaning_2$iso3, z=df_tb_cleaning_2$tb_infection_rate, frame = ~year, text=df_tb_cleaning_2$country.x, colorscale="magma")
+```r 
+fig <- plot_ly(tb_cleaning, type='choropleth', locations=tb_cleaning$iso3, z=tb_cleaning$tb_infection_rate, frame = ~year, text=tb_cleaning$country.x, colorscale="magma")
 
 fig
 ```
 ```{r}
-fig <- plot_ly(df_tb_cleaning_2, type='choropleth', locations=df_tb_cleaning_2$iso3, z=df_tb_cleaning_2$tb_infection_rate, frame = ~year, text=df_tb_cleaning_2$country.x, colorscale="magma")
+fig <- plot_ly(tb_cleaning, type='choropleth', locations=tb_cleaning$iso3, z=tb_cleaning$tb_infection_rate, frame = ~year, text=tb_cleaning$country.x, colorscale="magma")
 
 fig
 ```
 
 
 ## Vaccine
+### Vaccination Rate by Continent
+```r
+fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig <- fig %>% layout(
+  title = "Vaccination Rate by Continent",
+  yaxis = list(title='Continent')
+)
+fig
+```
+```{r}
+fig <- plot_ly(data=vaccine_tb_rate, x = ~vaccination_rate, y=~continent,frame = ~year, type='box',color=~continent)
+fig <- fig %>% layout(
+  title = "Vaccination Rate by Continent",
+  yaxis = list(title='Continent')
+)
+fig
+```
 ### Map for vaccination rate
 ```r
 fig <- plot_ly(vaccine_df, type='choropleth', locations=vaccine_df$iso3, z=vaccine_df$X2019,colorscale="Viridis",text=vaccine_df$country)
@@ -61,38 +314,113 @@ fig <- fig %>% layout(
 fig
 ```
 ```{r}
-fig <- plot_ly(vaccine_cleaned, type='choropleth', locations=vaccine_cleaned$iso3, z=vaccine_cleaned$vaccination_rate,frame = ~year, colorscale="Viridis",text=vaccine_cleaned$country)
+fig <- plot_ly(vaccine_pivoted, type='choropleth', locations=vaccine_pivoted$iso3, z=vaccine_pivoted$vaccination_rate,frame = ~year, colorscale="Viridis",text=vaccine_pivoted$country)
 fig <- fig %>% colorbar(title = "Vaccine Rate")
 fig <- fig %>% layout(
     title = "Vaccine Rate From 1992-2021"
 )
 fig
 ```
-### Vaccineation rate and population
+### Vaccination and TB Cases
 ```r
-fig <- plot_ly(data=vaccine_population_geo, x = ~population, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter')
+vaccine_tb_count <- vaccine_inc %>% 
+  mutate(vaccination_count_million = (vaccination_rate/100) * (population/1000000)) %>%
+  select(1:3,5:9) %>% 
+  replace(is.na(.),0)
+vaccine_tb_group <- vaccine_tb_count %>% 
+  select(2,4,3,8) %>%
+  group_by(year,continent) %>% 
+  summarise(sum_inc_in_million=sum(c_newinc)/1000000,sum_vac_million=sum(vaccination_count_million),.groups='drop')
+    
+vaccine_tb_group
+fig <- plot_ly(data=vaccine_tb_group)
+fig <- fig %>% add_trace(x=~year, y=~sum_vac_million, color=~continent, line = list(shape = 'linear', dash = 'dot'),
+    mode = "lines+markers",text="Number of Vaccination",
+    marker = list(symbol = "star_diamond", size = 5)
+) 
+
+ay <- list(
+  tickfont = list(color = "black"),
+  overlaying = "y",
+  side = "right",
+  title = "Number of Vaccination (in Million)")
+
+
+fig <- fig %>% add_trace(
+    x=~year, y=~sum_inc_in_million, color=~continent, mode = "lines+markers", yaxis = "y2", text="Number of Vaccination"
+)
+
 fig <- fig %>% layout(
-    xaxis = list(
-      type = "log"
-    )
-  )
-fig <- fig %>%
-  animation_opts(
-    1000, easing = "elastic", redraw = FALSE
-  )
+  title = "TB cases and Vaccination", yaxis2 = ay,
+  xaxis = list(title="Year"),
+  yaxis = list(title="Number of TB (in Million)")
+)%>%
+  layout(
+  legend = list(x = 1.1, y = 0)
+)
+
 fig
 ```
 ```{r}
-fig <- plot_ly(data=vaccine_population_geo, x = ~population, y=~vaccination_rate,color=~continent,frame=~year,text=~country,type='scatter')
+vaccine_tb_count <- vaccine_inc %>% 
+  mutate(vaccination_count_million = (vaccination_rate/100) * (population/1000000)) %>%
+  select(1:3,5:9) %>% 
+  replace(is.na(.),0)
+vaccine_tb_group <- vaccine_tb_count %>% 
+  select(2,4,3,8) %>%
+  group_by(year,continent) %>% 
+  summarise(sum_inc_in_million=sum(c_newinc)/1000000,sum_vac_million=sum(vaccination_count_million),.groups='drop')
+    
+vaccine_tb_group
+fig <- plot_ly(data=vaccine_tb_group)
+fig <- fig %>% add_trace(x=~year, y=~sum_vac_million, color=~continent, line = list(shape = 'linear', dash = 'dot'),
+    mode = "lines+markers",text="Number of Vaccination",
+    marker = list(symbol = "star_diamond", size = 5)
+) 
+
+ay <- list(
+  tickfont = list(color = "black"),
+  overlaying = "y",
+  side = "right",
+  title = "Number of Vaccination (in Million)")
+
+
+fig <- fig %>% add_trace(
+    x=~year, y=~sum_inc_in_million, color=~continent, mode = "lines+markers", yaxis = "y2", text="Number of Cases"
+)
+
 fig <- fig %>% layout(
-    xaxis = list(
-      type = "log"
-    )
-  )
-fig <- fig %>%
-  animation_opts(
-    1000, easing = "elastic", redraw = FALSE
-  )
+  title = "TB cases and Vaccination", yaxis2 = ay,
+  xaxis = list(title="Year"),
+  yaxis = list(title="Number of TB (in Million)")
+)%>%
+  layout(
+  legend = list(x = 1.1, y = 0)
+)
+
 fig
 ```
+
+#### Tree plot
+```{r}
+tree <- vaccine_inc %>% 
+  filter(year == 2019) %>% 
+  select(1,5,3,7) %>% 
+  drop_na(.)
+```
+
+
+```{r}
+treemap(tree, 
+        index=c("continent","iso3"),
+        vSize = "c_newinc",
+        vColor = "vaccination_rate",
+        type='value',
+        palette = 'Spectral',
+        title = 'Number of incidence in 2019'
+        )
+
+```
+
+
 

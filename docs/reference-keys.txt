@@ -24,6 +24,7 @@ data-cleaning
 population
 read-data-1
 merged-with-tb-data-set
+merged-with-vaccine-data-set
 hiv-infections
 read-data-and-merge-with-tb
 missing-value-analysis
@@ -35,11 +36,18 @@ missing-pattern-before-drop
 hiv-infections-1
 results
 import-library-and-dataset
+merge-vaccine-data-with-tb-data
 tb
 positive-cases-among-years
+tb-cases-by-continents
+infection-rate-by-continent
+age-and-gender-plots
+dot-plot
 maps-graph
 vaccine
+vaccination-rate-by-continent
 map-for-vaccination-rate
-vaccineation-rate-and-population
+vaccination-and-tb-cases
+tree-plot
 interactive-component
 conclusion
