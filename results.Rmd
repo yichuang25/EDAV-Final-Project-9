@@ -52,29 +52,73 @@ head(vaccine_tb_rate)
 
 
 ## TB Positive Cases From 1980 - 2021
+### The positive TB cases worldwids has a generally increasing trend from 1980 to 2021 and we assume the reason for is trend is the steady increase of the wold population. Also, we notice that there was a drop in 2020 and covid-19 might be one of the main reasons. 
 ```r
 sum_year <- tb_original %>%
             group_by(year) %>%
             summarize(total_positive = sum(c_newinc))
-fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines+markers')
+fig1 <- plot_ly(sum_year, x = ~year, y = ~total_positive, 
+                type = 'scatter', mode = 'lines+markers', 
+                fill = 'tozeroy', name = 'Positive TB Cases') %>% 
+        layout(
+          xaxis = list(range=c(1979,2022)),
+          plot_bgcolor='#BBBBBB',
+          yaxis = list(title='Total Positive'))
+
+
+temp_df <- df_population %>% 
+     group_by(year) %>% 
+     replace(is.na(.), 0) %>% 
+     summarize(popultion_sum = sum(population))
+fig2 <- plot_ly(temp_df, x = ~year, y = ~popultion_sum, 
+                type = 'scatter', mode = 'lines+markers', 
+                name = 'World Population') %>% 
+        layout(
+          xaxis = list(range=c(1979,2022)),
+          plot_bgcolor='#BBBBBB',
+          yaxis = list(title='Total Positive'),
+          title = 'Total Positive Test(1980-2021)')
+
+fig <- subplot(fig1, fig2, nrows = 2) %>% 
+       layout(title = 'Total Positive Test and World Population (1980-2021)')
 
 fig
 ```
+
+
 ```{r}
 sum_year <- tb_original %>%
             group_by(year) %>%
             summarize(total_positive = sum(c_newinc))
-fig <- plot_ly(sum_year, x = ~year, y = ~total_positive, type = 'scatter', mode = 'lines', fill = 'tozeroy')
-fig <- fig %>% 
-  layout(
-    plot_bgcolor='#BBBBBB',
-    yaxis = list(title='Total Positive'),
-    title = 'Total Positive Test(1980-2021)'
-  )
+fig1 <- plot_ly(sum_year, x = ~year, y = ~total_positive, 
+                type = 'scatter', mode = 'lines+markers', 
+                fill = 'tozeroy', name = 'Positive TB Cases') %>% 
+        layout(
+          xaxis = list(range=c(1979,2022)),
+          plot_bgcolor='#BBBBBB',
+          yaxis = list(title='Total Positive'))
+
+
+temp_df <- df_population %>% 
+     group_by(year) %>% 
+     replace(is.na(.), 0) %>% 
+     summarize(popultion_sum = sum(population))
+fig2 <- plot_ly(temp_df, x = ~year, y = ~popultion_sum, 
+                type = 'scatter', mode = 'lines+markers', 
+                name = 'World Population') %>% 
+        layout(
+          xaxis = list(range=c(1979,2022)),
+          plot_bgcolor='#BBBBBB',
+          yaxis = list(title='Total Positive'),
+          title = 'Total Positive Test(1980-2021)')
+
+fig <- subplot(fig1, fig2, nrows = 2) %>% 
+       layout(title = 'Total Positive Test and World Population (1980-2021)')
 
 fig
 ```
 ## TB Cases by Continents From 1992-2019
+### Asia has the highest number of TB cases among 5 continents and Africa takes the second. And the number of cases in Americas and Europe do not change a lot from 1980 to 2021.
 ```
 p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
   geom_histogram(binwidth=1) +
@@ -82,7 +126,6 @@ p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fil
 fig <- ggplotly(p)
 fig
 ```
-
 
 ```{r}
 p <- ggplot(vaccine_tb_rate, aes(x=year, weight = c_newinc, color=continent, fill = continent)) +
@@ -95,6 +138,7 @@ fig
 
 ```
 ## Infection Rate by Continent
+### Oceania has the highest variance because t
 ```r 
 fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent)
 fig %>% layout(
@@ -103,12 +147,42 @@ fig %>% layout(
 )
 ```
 ```{r}
-fig <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent,frame = ~year, type='box',color=~continent, colors = 'Spectral')
-fig %>% layout(
-  plot_bgcolor='#BBBBBB',
-  title = "Infection Rate by Continent",
-  xaxis = list(title='Continent')
-)
+treemap(tree, 
+        index=c("continent","iso3"),
+        vSize = "c_newinc",
+        vColor = "vaccination_rate",
+        type='value',
+        palette = 'Spectral',
+        
+        title = 'Number of incidence in 2019'
+        )
+```
+
+```{r}
+temp_df <- df_population %>% 
+           filter(year == 2019) %>% 
+           group_by(iso3)
+
+treemap(tree, 
+        index=c("continent","iso3"),
+        vSize = "c_newinc",
+        vColor = "vaccination_rate",
+        type='value',
+        palette = 'Spectral',
+        title = 'Number of incidence in 2019')
+
+```
+
+```{r}
+fig1 <- plot_ly(data=vaccine_tb_rate, x = ~tb_infection_rate, y=~continent, 
+               frame = ~year, type='box',
+               color=~continent, colors = 'Spectral') %>% 
+  layout(
+    plot_bgcolor='#BBBBBB',
+    title = "Infection Rate by Continent",
+    xaxis = list(title='Continent'))
+
+
 ```
 ## Age and Gender Plots
 ```r
