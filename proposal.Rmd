@@ -36,10 +36,12 @@ output:
   * The source is from the World Bank(WB) which is an international financial institution that provides loans and grants to the government of low- and middle income countries for the purpose of pursing capital projects. [Population Data](https://data.worldbank.org/indicator/SP.POP.TOTL?end=1989&start=1960)
   * The data set is covered all 266 countries in the world and the year covered is from 1980 to 2021.
   * The variables are mostly discrete expect for some categorical variables indicate each country.
+  * The data is csv file, and we will combine this data with vaccine data set and TB data set.
 
 ### Number of new HIV infections
   * The source is from Institute for Health Metrics and Evaluation, Global Burden of Disease(2019). [HIV Infection Data](http://ghdx.healthdata.org/gbd-results-tool)
   * The data set collects data from WHO member countries and time span for the data set is 1990-2019.
   * There are 266 countries in total, and the variables we focused on are all discrete integer.
+  * The data set is in csv file, we will combine this data with vaccine data set and TB data set.
 
 

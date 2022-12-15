@@ -7,6 +7,7 @@
    * The TB dataset is in CSV(comma-separated value). We can apply read.csv() in R to import the CSV file to the R data frame.
    * The TB dataset contains the annual data for the period of 41 years, so we assume that the frequency of updates is once per year. The TB dataset is composed of 198 features of TB data from 217 countries from 1980 to 2021, although there are huge amounts of missing data which will be handled in future analysis. 
    * The TB dataset contains 595 variables including the budget, community engagement, contacts preventive treatment, estimates, outcomes, etc.
+   * There are lots of missing data, dealing with missing value is impoertant in this dataset.
    * According to the topics we are interested in, we cannot analyze all variables. There are several potentially related features can be drawn from the dataset. 
      * c_newinc (Total of new and relapse cases and cases with unknown previous TB treatment history)
      * age_group (in years)
@@ -32,13 +33,14 @@
   * There are 266 countries in total, and the variables we focused on are all discrete integer.
   
 
-## Cleaning / transformation
+## Cleaning / Transformation
 ### Import Library
 ```r
 library(readxl)
 library(dplyr)
 library(redav)
 library(mi)
+library(tidyr)
 ```
 ```{r message=FALSE}
 library(readxl)
@@ -48,8 +50,8 @@ library(mi)
 library(tidyr)
 ```
 
-### TB notification and outcome dataset
-#### Import data
+### TB Notification and Outcome Dataset
+#### Import Data and Select Target Columns
 ```r
 tb <- read.csv("Datasets/raw/TB_notifications_2022-10-28.csv")
 tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
@@ -58,7 +60,8 @@ tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, ne
 tb <- read.csv("Datasets/raw/TB_notifications_2022-10-28.csv")
 tb_cleaning <- select(tb, country, iso3, year, new_sp, new_labconf, c_newinc, newrel_hivtest, newrel_hivpos, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, newrel_m014, newrel_m1524, newrel_m2534, newrel_m3544, newrel_m4554, newrel_m5564, newrel_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65, newrel_f014, newrel_f1524, newrel_f2534, newrel_f3544, newrel_f4554, newrel_f5564, newrel_f65)
 ```
-#### Merge Data
+
+#### Merge Data for Same Age Group
 ```r
 tb_cleaning_1 <- tb_cleaning
 tb_cleaning_1$new_sp_m014 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_m014, tb_cleaning$newrel_m014)
@@ -101,7 +104,7 @@ tb_cleaning_1$new_sp_f65 <- ifelse(tb_cleaning$year <= 2012, tb_cleaning$new_sp_
 tb_cleaning_1$hivtest <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest, tb_cleaning$newrel_hivtest)
 tb_cleaning_1$hivtest_pos <- ifelse(tb_cleaning$year <= 2014, tb_cleaning$hivtest_pos, tb_cleaning$newrel_hivpos)
 ```
-#### Remove missing data
+#### Remove Missing Values
 ```r
 tb_cleaning_2 <- select(tb_cleaning_1, country, iso3, year, new_sp, new_labconf, c_newinc, hivtest, hivtest_pos, new_sp_m014, new_sp_m1524, new_sp_m2534, new_sp_m3544, new_sp_m4554, new_sp_m5564, new_sp_m65, new_sp_f014, new_sp_f1524, new_sp_f2534, new_sp_f3544, new_sp_f4554, new_sp_f5564, new_sp_f65)
 tb_cleaning_3 <- subset(tb_cleaning_2, is.na(c_newinc) == FALSE)
@@ -114,8 +117,8 @@ write.csv(tb_cleaning_3, "Datasets/cleaned/tb_cleaning.csv")
 head(tb_cleaning_3)
 ```
 
-### Vaccination dataset
-#### Read Data
+### Vaccination Dataset
+#### Import Data
 ```r
 vaccine <- read_excel(path = "../vaccine.xlsx")
 vaccine_cleaned <- (vaccine %>% select(0:34))
@@ -129,7 +132,7 @@ vaccine_cleaned <- subset(vaccine_temp, select = -c(unicef_region,vaccine))
 write.csv(vaccine_cleaned, "Datasets/cleaned/vaccine_cleaned.csv")
 head(vaccine_cleaned)
 ```
-#### Data Cleaning
+#### Transform to Clean Data
 ```r
 vaccine_pivoted <- vaccine_cleaned %>%
   pivot_longer(cols = -c('iso3','country'),
@@ -152,7 +155,7 @@ head(vaccine_pivoted)
 
 
 ### Population
-#### Read data
+#### Import and Trandorm to Clean Data
 ```r
 df_population <- read.csv("../Datasets/population.csv")
 df_population_1 <- df_population %>% 
@@ -177,7 +180,7 @@ df_population_1 <- df_population %>%
 write.csv(df_population_1, "Datasets/cleaned/df_population.csv")
 head(df_population_1)
 ```
-#### Merged with TB data set
+#### Merged with TB Dataset
 ```r
 df_tb_cleaning <- merge(df_population_1, tb_cleaning_3, by = c('iso3', 'year'))
 df_continent <- read.csv("Datasets/raw/continents2.csv")
@@ -199,7 +202,7 @@ write.csv(df_tb_cleaning_1, "Datasets/cleaned/tb_population_geo.csv")
 head(df_tb_cleaning_1)
 ```
 
-#### Merged with vaccine data set
+#### Merged with Vaccine Dataset
 ```r
 vaccine_population <- merge(vaccine_pivoted, df_population_1, by=c('iso3','year','country'))
 vaccine_population_geo <- merge(df_continent_1, vaccine_population, by='iso3')
@@ -213,8 +216,8 @@ write.csv(vaccine_population_geo, "Datasets/cleaned/vaccine_population_geo.csv")
 head(vaccine_population_geo)
 ```
 
-### HIV infections
-#### Read Data and merge with TB
+### HIV Infections
+#### Read Dataset and mMrge with TB Dataset
 ```r
 df_hiv <- read.csv("../Datasets/number-of-people-living-with-hiv.csv")
 df_hiv_1 <- df_hiv %>% 
@@ -243,8 +246,8 @@ head(df_tb_cleaning_2)
 ```
 
 
-## Missing value analysis
-### TB notification and outcome dataset
+## Missing Patttern 
+### TB Notification and Outcome Dataset
 #### Before Cleaning
 ```r
 colSums(is.na(tb_cleaning))
@@ -258,6 +261,7 @@ plot_missing(tb_cleaning)
 ```{r}
 plot_missing(tb_cleaning)
 ```
+>> There are missing value for almost all variables except new incidence number. For some columns, such as 'new_sp_m014' and 'newrel_m014', the first one is record the number until 2012, and latter one record number after 2012. So we can combine these two and reduce missing values.
 
 #### After Cleaning
 ```r
@@ -273,8 +277,11 @@ plot_missing(tb_cleaning_3)
 plot_missing(tb_cleaning_3)
 ```
 
-### Vaccination dataset
-#### Missing Pattern Before Drop
+>> After data cleaning and combining associated columns, the row missing reduced about 25%. 
+
+
+### Vaccination Dataset
+#### Missing Pattern Before Cleaning
 ```r
 colSums(is.na(vaccine))
 ```
@@ -287,7 +294,10 @@ plot_missing(vaccine)
 ```{r}
 plot_missing(vaccine)
 ```
-#### Missing Pattern After Drop
+
+>> From the plot, the most missing values occurs before 1992.
+
+#### Missing Pattern After Cleaning
 ```r
 colSums(is.na(vaccine_cleaned))
 ```
@@ -300,6 +310,8 @@ plot_missing(vaccine)
 ```{r}
 plot_missing(vaccine_cleaned)
 ```
+>> After dropping years before 1992, the complete cases increased more than 25%.
+
 ### Population
 ```r
 colSums(is.na(df_population_1))
@@ -313,6 +325,7 @@ plot_missing(df_population_1)
 ```{r}
 plot_missing(df_population_1)
 ```
+>> From the plot, the population are almost all complete cases.
 
 ### HIV infections
 ```r
@@ -328,3 +341,10 @@ plot_missing(df_hiv)
 plot_missing(df_hiv)
 ```
 
+>> The HIV data set are all complete cases.
+
+## Missing Value Analysis
+
+* There are 4 data sets total - the TB data set, Vaccine data set, Population data set, and HIV data set. The Population and HIV data set almost have no missing value. However, the TB data set and Vaccine have plenty missing value and data set layout is messy which need to drop columns and pivot the table of the data sets.
+* For TB data set, there are lots of country didn't report the TB cases for different age group, it is possible because some country may not have the ability to count cases in the early years. For some country, they adapted new detection technology after 2012; therefore, we havet to combine the columns to get the overall cases statistics for all age group.
+* For Vaccine data set, some countries not require the public take TB vaccine like U.S. and Canada, and some countries requires public take TB vaccine for infant. Hence, it is reasonable that there will have some missing value for some country. Some country start to mass inoculations since 1992, we can focus on the years between 1992 to 2021.
