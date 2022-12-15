@@ -1,13 +1,24 @@
 # Conclusion
 
 ## Exploration
-
+* The TB increase with population increasing.
+* Asia and Africa are top two continent with highest TB cases.
+* Oceania has highest variance because there are only 14 independent countries in the continent.
+* People with HIV are easier to get TB because HIV will undermine human immune system.
+* The Infection rate in the southern Africa is increasing from 1990-2020.
+* The infection rate for Africa decreased after 2010 and vaccination rate increased.
 
 ## limitation
-
+* The development cycle for this project is not very long. Our team only collect some key data about TB and TB vaccine, the data sets didn't covered all aspect of TB. It is possible there will exist some selection bias for the data. 
+* Some country such as US and Canada are not covered in the Vaccine data set which will cause some loss in the map plot and tree map.
 
 ## Future Direction
-### The Relationship Between Covid-19 and TB
-* From the line 
+* From the line plot for from [section 4.3](https://yichuang25.github.io/EDAV-Final-Project-9/results.html#tb-positive-cases-from-1980---2021), we can see that there is a drop from 2019 to 2020. It is possible that there are some relationship between Covid-19 and TB during the pandemic and our team will discover them in the future research.
+* More TB data such as TB cases for each county in the US will be provided in the future and we will create a Map graph for whole US.
+* Our team will keep discovering the relationship between vaccination and TB cases and relationship between Covid-19 cases and Covid-19 vaccine.
+* With out losing generality, more contagious diseases will be analysis and added in the future.
 
 ## Reflection
+* The quality of TB notification data set is not very good, there are so many missing values and the data is so messy. We have to drop many years in the past to reduce the missing values which will loss some valuable information. 
+* The Vaccination data set is collected from UNICEF database, and there are numbers of empty data for some country between 1980-1992. After dropping data between these years, and combine with TB data set. The timeline of TB and vaccine rate for some country is noncontinuous.
+* Our team are not very familiar with interactive component with D3. We will master and add more D3 component in the future.

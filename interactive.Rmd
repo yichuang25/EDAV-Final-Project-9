@@ -1,5 +1,4 @@
-# Interactive component
-
+# Interative
 <!-- Load d3.js -->
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
@@ -49,7 +48,7 @@ var colorScale = d3.scaleThreshold()
 
 var promises = []
 promises.push(d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"))
-promises.push(d3.csv("https://raw.githubusercontent.com/yichuang25/EDAV-Final-Project-9/main/Datasets/cleaned/vaccine_no_na.csv?token=GHSAT0AAAAAAB2QTV2PNBT6V2O3ZTO2TET2Y43FHUA", function(d) { data.set(d.iso3, +d.X2021); }))
+promises.push(d3.csv("https://raw.githubusercontent.com/yichuang25/EDAV_Published_Data/main/vaccine_no_na.csv", function(d) { data.set(d.iso3, +d.X2021); }))
 
 
 myDataPromises = Promise.all(promises).then(function(topo) {

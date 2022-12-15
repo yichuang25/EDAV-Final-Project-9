@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>EDAV Final Project (Group 9)</title>
-  <meta name="description" content="EDAV Final Project (Group 9)" />
+  <title>Chapter 5 Interative | EDAV Final Project (Group 9)</title>
+  <meta name="description" content="Chapter 5 Interative | EDAV Final Project (Group 9)" />
   <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="EDAV Final Project (Group 9)" />
+  <meta property="og:title" content="Chapter 5 Interative | EDAV Final Project (Group 9)" />
   <meta property="og:type" content="book" />
   
   
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="EDAV Final Project (Group 9)" />
+  <meta name="twitter:title" content="Chapter 5 Interative | EDAV Final Project (Group 9)" />
   
   
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="proposal.html"/>
+<link rel="prev" href="results.html"/>
+<link rel="next" href="conclusion.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -232,16 +232,144 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">EDAV Final Project (Group 9)</h1>
-<p class="author"><em>Cong Chen, Taichen Zhou, Yichen Huang</em></p>
-<p class="date"><em>2022-12-15</em></p>
+<div id="interative" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Interative<a href="interative.html#interative" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+<!-- Create an element where the map will take place -->
+<div id="tooltip">
+
 </div>
-<div id="introduction" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">Chapter 1</span> Introduction<a href="index.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>For the final project, our team will focus on discovering the relationship between the disease Tuberculosis (TB) spread worldwide and the TB vaccine - Bacille Calmette-Guerin (BCG). The TB dataset collected from WHO covers numerous information, including but not limited to the budget, new cases, treatment success rate, etc., from 1980 - 2021. The BCG dataset is collected from UNICEF, including the vaccination rate for each country from 1980 - 2021.</p>
-<p>TB is caused by a bacterium called Mycobacterium tuberculosis. The bacteria usually attract the lungs, but TB bacteria can affect any part of the body, such as the kidney, spine, and brain. Not everyone infected with TB bacteria becomes sick. As a result, two TB-related conditions exist latent TB infection (LTBI) and TB disease. If not treated properly, TB disease can be fatal. (TB Basic Facts) [<a href="https://www.cdc.gov/tb/topic/basics/default.htm" class="uri">https://www.cdc.gov/tb/topic/basics/default.htm</a>] TB bacteria spread through the air from one person to another. When a person with TB disease of the lungs or throat coughs, speaks or sings, TB bacteria can get into the air. People nearby may breathe in these bacteria and become infected. (TB Spread) [<a href="https://www.cdc.gov/tb/topic/basics/howtbspreads.htm" class="uri">https://www.cdc.gov/tb/topic/basics/howtbspreads.htm</a>]</p>
-<p>TB vaccine - BCG is a vaccine for tuberculosis (TB) disease. This vaccine is not widely used in the United States. However, it is often given to infants and small children in other countries where TB is common. BCG does not always protect people from getting TB. (BCG Basic Facts) [<a href="https://www.cdc.gov/tb/topic/basics/vaccines.htm" class="uri">https://www.cdc.gov/tb/topic/basics/vaccines.htm</a>]</p>
+<svg id="map">
+</svg>
+<script>
+var margin = {top: 20, right: 10, bottom: 40, left: 100},
+    width = 600 - margin.left - margin.right,
+       height = 400 - margin.top - margin.bottom;
+
+var svg = d3.select("svg")
+ .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+var tooltip = d3.select("#tooltip")
+.style("opacity", 0)
+.attr("class", "tooltip")
+.style("background-color", "white")
+.style("border", "solid")
+.style("border-width", "1px")
+.style("border-radius", "5px")
+.style("padding", "5px")
+.style("position", "absolute")
+ 
+var projection = d3.geoMercator()
+  .scale(70)
+  .center([0,20])
+  .translate([width / 2 - margin.left, height / 2]);
+
+var data = d3.map();
+var domain = [20, 40, 60, 80]
+var labels = ["<20", "20~40", "40~60", "60~80", "80~100"]
+var range = d3.schemeBlues[5]
+var colorScale = d3.scaleThreshold()
+  .domain(domain)
+  .range(range);
+
+
+var promises = []
+promises.push(d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"))
+promises.push(d3.csv("https://raw.githubusercontent.com/yichuang25/EDAV_Published_Data/main/vaccine_no_na.csv", function(d) { data.set(d.iso3, +d.X2021); }))
+
+
+myDataPromises = Promise.all(promises).then(function(topo) {
+
+    
+    let mouseOver = function(d) {
+        d3.selectAll(".topo")
+            
+            .transition()
+            .duration(200)
+            .style("opacity", .5)
+            
+        d3.select(this)
+            .transition()
+            .duration(200)
+            .style("opacity", 1)
+            .style("stroke", "black")
+      
+        d.total = data.get(d.id) || 0;
+        
+        tooltip
+            .style("opacity", 0.8)
+            .html(d.id + ": " + d3.format(",.2r")(d.total))
+            .style("left", (d3.event.pageX) + "px")     
+            .style("top", (d3.event.pageY - 28) + "px");
+            
+        d3.select("#annotation")
+        .style("opacity", 0)    
+        
+  }
+
+  let mouseLeave = function(d) {
+    d3.selectAll(".topo")
+      .transition()
+      .duration(200)
+      .style("opacity", .7)
+      
+    d3.selectAll(".topo")
+      .transition()
+      .duration(200)
+      .style("stroke", "transparent")
+      
+    d3.select("#annotation")
+        .style("opacity", 1)
+      
+    tooltip
+          .style("opacity", 0)
+  }
+
+    var topo = topo[0]
+
+    svg.append("g")
+        .selectAll("path")
+        
+        .data(topo.features)
+        .enter()
+        .append("path")
+        .attr("class", "topo")
+        .attr("d", d3.geoPath()
+            .projection(projection)
+        )
+        .attr("fill", function (d) {
+            d.total = data.get(d.id) || 0;
+            return colorScale(d.total);
+        })
+        .style("opacity", .7)
+      .on("mouseover", mouseOver )
+      .on("mouseleave", mouseLeave )
+      
+      
+  var legend_x = width - margin.left
+  var legend_y = height - 100
+  svg.append("g")
+        .attr("class", "legendQuant")
+        .attr("transform", "translate(" + legend_x + "," + legend_y+")");
+
+    var legend = d3.legendColor()
+        .labels(labels)
+        .title("Population")
+        .scale(colorScale)
+    
+    
+  svg.select(".legendQuant")
+      .call(legend);
+    })
+</script>
 
 </div>
             </section>
@@ -249,8 +377,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           </div>
         </div>
       </div>
-
-<a href="proposal.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="results.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="conclusion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -281,7 +409,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/yichuang25/EDAV-Final-Project-9/edit/main/index.Rmd",
+"link": "https://github.com/yichuang25/EDAV-Final-Project-9/edit/main/interactive.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -289,7 +417,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/yichuang25/EDAV-Final-Project-9/blob/main/index.Rmd",
+"link": "https://github.com/yichuang25/EDAV-Final-Project-9/blob/main/interactive.Rmd",
 "text": null
 },
 "download": null,
