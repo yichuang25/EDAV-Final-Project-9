@@ -1,0 +1,136 @@
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+
+<!-- Create an element where the map will take place -->
+<div id="tooltip"></div>
+<svg id="map"></svg>
+
+
+<script>
+var margin = {top: 20, right: 10, bottom: 40, left: 100},
+    width = 600 - margin.left - margin.right,
+       height = 400 - margin.top - margin.bottom;
+
+var svg = d3.select("svg")
+ .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+var tooltip = d3.select("#tooltip")
+.style("opacity", 0)
+.attr("class", "tooltip")
+.style("background-color", "white")
+.style("border", "solid")
+.style("border-width", "1px")
+.style("border-radius", "5px")
+.style("padding", "5px")
+.style("position", "absolute")
+ 
+var projection = d3.geoMercator()
+  .scale(70)
+  .center([0,20])
+  .translate([width / 2 - margin.left, height / 2]);
+
+var data = d3.map();
+var domain = [20, 40, 60, 80]
+var labels = ["<20", "20~40", "40~60", "60~80", "80~100"]
+var range = d3.schemeBlues[5]
+var colorScale = d3.scaleThreshold()
+  .domain(domain)
+  .range(range);
+
+
+var promises = []
+promises.push(d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"))
+promises.push(d3.csv("https://raw.githubusercontent.com/yichuang25/EDAV-Final-Project-9/main/Datasets/cleaned/vaccine_no_na.csv?token=GHSAT0AAAAAAB2QTV2PNBT6V2O3ZTO2TET2Y43FHUA", function(d) { data.set(d.iso3, +d.X2021); }))
+
+
+myDataPromises = Promise.all(promises).then(function(topo) {
+
+	
+	let mouseOver = function(d) {
+    	d3.selectAll(".topo")
+    		
+      		.transition()
+      		.duration(200)
+      		.style("opacity", .5)
+      		
+    	d3.select(this)
+    		.transition()
+      		.duration(200)
+      		.style("opacity", 1)
+      		.style("stroke", "black")
+      
+      	d.total = data.get(d.id) || 0;
+      	
+      	tooltip
+          	.style("opacity", 0.8)
+          	.html(d.id + ": " + d3.format(",.2r")(d.total))
+          	.style("left", (d3.event.pageX) + "px")		
+          	.style("top", (d3.event.pageY - 28) + "px");
+          	
+        d3.select("#annotation")
+    	.style("opacity", 0) 	
+        
+  }
+
+  let mouseLeave = function(d) {
+    d3.selectAll(".topo")
+      .transition()
+      .duration(200)
+      .style("opacity", .7)
+      
+    d3.selectAll(".topo")
+      .transition()
+      .duration(200)
+      .style("stroke", "transparent")
+      
+    d3.select("#annotation")
+    	.style("opacity", 1)
+      
+    tooltip
+          .style("opacity", 0)
+  }
+
+	var topo = topo[0]
+
+  	svg.append("g")
+    	.selectAll("path")
+    	
+    	.data(topo.features)
+    	.enter()
+    	.append("path")
+    	.attr("class", "topo")
+      	.attr("d", d3.geoPath()
+        	.projection(projection)
+      	)
+      	.attr("fill", function (d) {
+        	d.total = data.get(d.id) || 0;
+        	return colorScale(d.total);
+      	})
+      	.style("opacity", .7)
+      .on("mouseover", mouseOver )
+      .on("mouseleave", mouseLeave )
+      
+      
+  var legend_x = width - margin.left
+  var legend_y = height - 100
+  svg.append("g")
+		.attr("class", "legendQuant")
+		.attr("transform", "translate(" + legend_x + "," + legend_y+")");
+
+	var legend = d3.legendColor()
+    	.labels(labels)
+    	.title("Population")
+    	.scale(colorScale)
+    
+    
+  svg.select(".legendQuant")
+	  .call(legend);
+    })
+</script>
